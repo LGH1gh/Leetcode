@@ -53,6 +53,61 @@ class Solution:
                 elif len(words[i]) > len(words[j]):
                     pass
     
+    # (62) T: 86.08% S: 61.19%
+    def uniquePaths(self, m: int, n: int) -> int:
+        M, m = max(m, n)-1, min(m, n)-1
+        result = 1
+        for i in range(m):
+            result *= (M+i+1)
+        for i in range(m):
+            result /= i+1
+        return int(result)
+
+    # (79) T: 5.02% S: 42.15%
+    def existHelper(self, board: List[List[int]], word: str, position: List[int], map: List[List[bool]]) -> bool:
+        if len(word) == 0:
+            return True
+        else:
+            down, up, right, left = False, False, False, False
+            if position[0]+1 < len(board) and map[position[0]+1][position[1]] == False and board[position[0]+1][position[1]] == word[0]:
+                map[position[0]+1][position[1]] = True
+                down = self.existHelper(board, word[1:], [position[0]+1, position[1]], map)
+                map[position[0]+1][position[1]] = False
+                if down:
+                    return True
+            if position[0]-1 >= 0 and map[position[0]-1][position[1]] == False and board[position[0]-1][position[1]] == word[0]:
+                map[position[0]-1][position[1]] = True
+                up = self.existHelper(board, word[1:], [position[0]-1, position[1]], map)
+                map[position[0]-1][position[1]] = False
+                if up:
+                    return True
+            if position[1]+1 < len(board[0]) and map[position[0]][position[1]+1] == False and board[position[0]][position[1]+1] == word[0]:
+                map[position[0]][position[1]+1] = True
+                right = self.existHelper(board, word[1:], [position[0], position[1]+1], map)
+                map[position[0]][position[1]+1] = False
+                if right:
+                    return True
+            if position[1]-1 >= 0 and map[position[0]][position[1]-1] == False and board[position[0]][position[1]-1] == word[0]:
+                map[position[0]][position[1]-1] = True
+                left = self.existHelper(board, word[1:], [position[0], position[1]-1], map)
+                map[position[0]][position[1]-1] = False
+                if left:
+                    return True
+            return False
+    def exist(self, board: List[List[str]], word: str) -> bool:
+        starts = []
+        for i in range(len(board)):
+            for j in range(len(board[0])):
+                if board[i][j] == word[0]:
+                    starts.append([i, j])
+        for start in starts:
+            # print('------------------')
+            map = [[False for i in range(len(board[0]))] for j in range(len(board))]
+            map[start[0]][start[1]] = True
+            if self.existHelper(board, word[1:], start, map) == True:
+                return True
+        return False
+            
     # (118) T: 32.98% S: 43.39%
     def generate(self, numRows: int) -> List[List[int]]:
         result = [[1], [1, 1]]
@@ -83,6 +138,19 @@ class Solution:
             return min_count
         else:
             return len(tasks)
+
+    # (693) T: 94.88% S: 29.85%
+    def hasAlternatingBits(self, n: int) -> bool:
+        flag = -1
+        while n != 0:
+            if flag == -1:
+                flag = n % 2
+            else:
+                if n % 2 == flag:
+                    return False
+                flag = n % 2
+            n = int(n / 2)
+        return True
 
     # (721, dp) T: 5.08% S: 45.05%
     def minimumDeleteSum(self, s1: str, s2: str) -> int:
@@ -135,6 +203,36 @@ class Solution:
                 result.append(noncontain_intervals[i][1])
             # print(result)
         return len(result)
+    
+    # (842) T: 21.90% T: 13.00%
+    def splitIntoFibonacciHelper(self, S: str, index: int, nums: List[int]) -> List[int]: 
+        if S == "":
+            return nums
+        else:
+            if index == len(S) + 1:
+                return []
+            elif int(S[0:index]) == nums[-1] + nums[-2] and not (S[0]=='0' and index != 1):
+                if int(S[0:index]) >= 2147483647:
+                    return []
+                nums.append(int(S[0:index]))
+                return self.splitIntoFibonacciHelper(S[index:], 1, nums)
+            else:
+                return self.splitIntoFibonacciHelper(S, index+1, nums)
+    def splitIntoFibonacci(self, S: str) -> List[int]: 
+        for i in range(1, len(S)):
+            if S[0] == '0' and i != 1:
+                    continue
+            if int(S[0:i]) >= 2147483647:
+                break
+            for j in range(i+1,len(S)):
+                if S[i] == '0' and j != i+1:
+                    continue
+                if int(S[i:j]) >= 2147483647:
+                    break
+                result = self.splitIntoFibonacciHelper(S[j:], 1, [int(S[0:i]), int(S[i:j])])
+                if result != []:
+                    return result
+        return []
 
     # (861) T: 50.00% S: 23.08%
     def matrixScore(self, A: List[List[int]]) -> int:
@@ -157,7 +255,7 @@ class Solution:
             result += int(str(''.join(A[i])), 2)
         return result
 
-    
+
 
 
 solution = Solution()
@@ -165,12 +263,21 @@ solution = Solution()
 # print(solution.isStraight([1,2,3,4,5]))
 # print(solution.palindromePairs(["abcd","dcba","lls","s","sssll"]))
 
+# print(solution.uniquePaths(5, 1)) # 62
+
+# print(solution.exist([["A","B","C","E"],["S","F","E","S"],["A","D","E","E"]], "ABCEFSADEESE")) # 79
+
 # print(solution.generate(5)) # 118
 
 # print(solution.leastInterval(["A","A","A","B","B","B"], 2)) # 621
+
+# print(solution.hasAlternatingBits(10)) # 693
 
 # print(solution.minimumDeleteSum(s1 = "delete", s2 = "leet")) # 721
 
 # print(solution.intersectionSizeTwo([[33,44],[42,43],[13,37],[24,33],[24,33],[25,48],[10,47],[18,24],[29,37],[7,34]])) # 757
 
+# print(solution.splitIntoFibonacci("539834657215398346785398346991079669377161950407626991734534318677529701785098211336528511")) # 842
+
 # print(solution.matrixScore([[0,0,1,1],[1,0,1,0],[1,1,0,0]])) # 861
+
