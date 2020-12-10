@@ -1,5 +1,11 @@
 from typing import List
 
+class TreeNode:
+    def __init__(self, x):
+        self.val = x
+        self.left = None
+        self.right = None
+
 class Solution:
     # TODO 贪心算法证明
     def isPossible(self, nums: List[int]) -> bool:
@@ -234,6 +240,33 @@ class Solution:
                     return result
         return []
 
+    # (860) T: 86.23% S: 33.77%
+    def lemonadeChange(self, bills: List[int]) -> bool:
+        dollar5, dollar10, dollar20 = 0, 0, 0
+        for bill in bills:
+            if bill == 5:
+                dollar5 += 1
+            elif bill == 10:
+                if dollar5 == 0:
+                    return False
+                else:
+                    dollar10 += 1
+                    dollar5 -= 1
+            else:
+                if dollar10 == 0:
+                    if dollar5 < 3:
+                        return False
+                    else:
+                        dollar5 -= 3
+                        dollar20 += 1
+                else:
+                    if dollar5 == 0:
+                        return False
+                    else:
+                        dollar5 -= 1
+                        dollar10 -= 1
+                        dollar20 += 1
+        return True
     # (861) T: 50.00% S: 23.08%
     def matrixScore(self, A: List[List[int]]) -> int:
         for i in range(len(A)):
@@ -255,7 +288,46 @@ class Solution:
             result += int(str(''.join(A[i])), 2)
         return result
 
-
+    # (1305) T: 32.00% S: 64.14%
+    def getAllElementsHelper(self, root: TreeNode) -> List[int]:
+        if root.left == None and root.right == None:
+            return [root.val]
+        elif root.right == None:
+            temp = self.getAllElementsHelper(root.left)
+            temp.extend([root.val])
+            return temp
+        elif root.left == None:
+            temp = [root.val]
+            temp.extend(self.getAllElementsHelper(root.right))
+            return temp
+        else:
+            temp = self.getAllElementsHelper(root.left)
+            temp.extend([root.val])
+            temp.extend(self.getAllElementsHelper(root.right))
+            return temp
+    def getAllElements(self, root1: TreeNode, root2: TreeNode) -> List[int]:
+        result1, result2 = [], []
+        if root1 != None:
+            result1 = self.getAllElementsHelper(root1)
+        if root2 != None:
+            result2 = self.getAllElementsHelper(root2)
+        result = []
+        i, j = 0, 0
+        while i != len(result1) or j != len(result2):
+            if i == len(result1):
+                result.append(result2[j])
+                j += 1
+            elif j == len(result2):
+                result.append(result1[i])
+                i += 1
+            else:
+                if result1[i] < result2[j]:
+                    result.append(result1[i])
+                    i += 1
+                else:
+                    result.append(result2[j])
+                    j += 1
+        return result
 
 
 solution = Solution()
@@ -281,3 +353,12 @@ solution = Solution()
 
 # print(solution.matrixScore([[0,0,1,1],[1,0,1,0],[1,1,0,0]])) # 861
 
+# root1 = TreeNode(1)
+# root1.left = TreeNode(0)
+# root1.right = TreeNode(3)
+
+# root2 = TreeNode(2)
+# root2.left = TreeNode(1)
+# root2.right = TreeNode(4)
+
+# print(solution.getAllElements(root1, root2)) # 1305
