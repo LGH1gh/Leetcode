@@ -145,6 +145,38 @@ class Solution:
         else:
             return len(tasks)
 
+    # (649) T: 75.00% S: 41.10%
+    def predictPartyVictory(self, senate: str) -> str:
+        mark = [0 for i in range(len(senate))]
+        radiant, dire, radiant_ban, dire_ban = 0, 0, 0, 0
+        for i in senate:
+            if i == 'R':
+                radiant += 1
+            else:
+                dire += 1
+        while radiant != 0 and dire != 0:
+            for i in range(len(senate)):
+                if radiant == 0 or dire == 0:
+                    break
+                if mark[i] == 1:
+                    continue
+                if senate[i] == 'R' and radiant_ban != 0:
+                    mark[i] = 1
+                    radiant_ban -= 1
+                elif senate[i] == 'R' and radiant_ban == 0:
+                    dire_ban += 1
+                    dire -= 1
+                elif senate[i] == 'D' and dire_ban != 0:
+                    mark[i] = 1
+                    dire_ban -= 1
+                elif senate[i] == 'D' and dire_ban == 0:
+                    radiant_ban += 1
+                    radiant -= 1
+        if radiant == 0:
+            return "Dire"
+        else:
+            return "Radiant"
+
     # (693) T: 94.88% S: 29.85%
     def hasAlternatingBits(self, n: int) -> bool:
         flag = -1
@@ -329,36 +361,53 @@ class Solution:
                     j += 1
         return result
 
+    # (1536) T: 96.55% S: 15.79%
+    def minSwaps(self, grid: List[List[int]]) -> int:
+        counts = []
+        for row in grid:
+            count = 0
+            for i in range(len(row)-1, -1, -1):
+                if row[i] == 0:
+                    count += 1
+                else:
+                    break
+            counts.append(count)
+        result = 0
+        for i in range(len(counts)):
+            if counts[i] >= len(counts) - i - 1:
+                continue
+            for j in range(i+1, len(counts)):
+                if counts[j] >= len(counts) - i - 1:
+                    result += (j - i)
+                    for k in range(j, i, -1):
+                        counts[k], counts[k-1] = counts[k-1], counts[k]
+                    break
+            if counts[i] < len(counts) - i - 1:
+                return -1
+        return result
+
+    # (1539) T: 85.31% S: 46.46%
+    def findKthPositive(self, arr: List[int], k: int) -> int:
+        result = len(arr) + k
+        for i in range(len(arr)-1, -1, -1):
+            if arr[i] >= result:
+                result -= 1
+            else:
+                break
+        return result
+
 
 solution = Solution()
-# print(solution.isPossible([1,2,3,3,4,4,5,5]))
-# print(solution.isStraight([1,2,3,4,5]))
-# print(solution.palindromePairs(["abcd","dcba","lls","s","sssll"]))
 
 # print(solution.uniquePaths(5, 1)) # 62
-
 # print(solution.exist([["A","B","C","E"],["S","F","E","S"],["A","D","E","E"]], "ABCEFSADEESE")) # 79
-
 # print(solution.generate(5)) # 118
-
 # print(solution.leastInterval(["A","A","A","B","B","B"], 2)) # 621
-
+# print(solution.predictPartyVictory("RD")) # 649
 # print(solution.hasAlternatingBits(10)) # 693
-
 # print(solution.minimumDeleteSum(s1 = "delete", s2 = "leet")) # 721
-
 # print(solution.intersectionSizeTwo([[33,44],[42,43],[13,37],[24,33],[24,33],[25,48],[10,47],[18,24],[29,37],[7,34]])) # 757
-
 # print(solution.splitIntoFibonacci("539834657215398346785398346991079669377161950407626991734534318677529701785098211336528511")) # 842
-
 # print(solution.matrixScore([[0,0,1,1],[1,0,1,0],[1,1,0,0]])) # 861
-
-# root1 = TreeNode(1)
-# root1.left = TreeNode(0)
-# root1.right = TreeNode(3)
-
-# root2 = TreeNode(2)
-# root2.left = TreeNode(1)
-# root2.right = TreeNode(4)
-
-# print(solution.getAllElements(root1, root2)) # 1305
+# print(solution.minSwaps(grid = [[0,0,1],[1,1,0],[1,0,0]]))
+# print(solution.findKthPositive(arr = [1,2,3,4], k = 2)) # 1539
