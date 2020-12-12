@@ -131,6 +131,27 @@ class Solution:
             result.append(temp)
         return result
 
+    # (376) T: 32.00% S: 5.16%
+    def wiggleMaxLength(self, nums: List[int]) -> int:
+        if len(nums) == 0:
+            return 0
+        refine_nums = [nums[0]]
+        for i in range(1, len(nums)):
+            if nums[i] == nums[i-1]:
+                continue
+            refine_nums.append(nums[i])
+        if len(refine_nums) == 1:
+            return 1
+        result_nums = [refine_nums[0]]
+        for i in range(1, len(refine_nums)-1):
+            if (refine_nums[i]-refine_nums[i-1]) * (refine_nums[i+1]-refine_nums[i]) < 0:
+                result_nums.append(refine_nums[i])
+        if len(result_nums) == 1:
+            return 2
+        if (result_nums[-1]-result_nums[-2]) * (refine_nums[-1]-result_nums[-1]) < 0:
+            result_nums.append(refine_nums[-1])
+        return len(result_nums)
+                
     # (621) T: 61.97% S: 43.87%
     def leastInterval(self, tasks: List[str], n: int) -> int:
         if n == 0:
@@ -361,6 +382,21 @@ class Solution:
                     j += 1
         return result
 
+    # (1423) T: 70.38% S: 6.02%
+    def maxScore(self, cardPoints: List[int], k: int) -> int:
+        score1 = [0, cardPoints[0]]
+        score2 = [0, cardPoints[-1]]
+        for i in range(1, k):
+            score1.append(score1[-1]+cardPoints[i])
+            score2.append(score2[-1]+cardPoints[-i-1])
+        # print(score1)
+        # print(score2)
+        result = 0
+        for i in range(0, len(score1)):
+            if result < score1[i] + score2[k-i]:
+                result = score1[i] + score2[k-i]
+        return result
+
     # (1536) T: 96.55% S: 15.79%
     def minSwaps(self, grid: List[List[int]]) -> int:
         counts = []
@@ -402,6 +438,7 @@ solution = Solution()
 # print(solution.uniquePaths(5, 1)) # 62
 # print(solution.exist([["A","B","C","E"],["S","F","E","S"],["A","D","E","E"]], "ABCEFSADEESE")) # 79
 # print(solution.generate(5)) # 118
+# print(solution.wiggleMaxLength([1,2,3,4,5,6,7,8,9])) # 376
 # print(solution.leastInterval(["A","A","A","B","B","B"], 2)) # 621
 # print(solution.predictPartyVictory("RD")) # 649
 # print(solution.hasAlternatingBits(10)) # 693
@@ -409,5 +446,6 @@ solution = Solution()
 # print(solution.intersectionSizeTwo([[33,44],[42,43],[13,37],[24,33],[24,33],[25,48],[10,47],[18,24],[29,37],[7,34]])) # 757
 # print(solution.splitIntoFibonacci("539834657215398346785398346991079669377161950407626991734534318677529701785098211336528511")) # 842
 # print(solution.matrixScore([[0,0,1,1],[1,0,1,0],[1,1,0,0]])) # 861
-# print(solution.minSwaps(grid = [[0,0,1],[1,1,0],[1,0,0]]))
+# print(solution.maxScore(cardPoints = [1,79,80,1,1,1,200,1], k = 3)) # 1423
+# print(solution.minSwaps(grid = [[0,0,1],[1,1,0],[1,0,0]])) # 1536
 # print(solution.findKthPositive(arr = [1,2,3,4], k = 2)) # 1539
