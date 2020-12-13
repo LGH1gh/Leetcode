@@ -1,4 +1,5 @@
 from typing import List
+from datetime import datetime
 
 class TreeNode:
     def __init__(self, x):
@@ -130,6 +131,14 @@ class Solution:
             temp.append(1)
             result.append(temp)
         return result
+
+    # (217) T: 62.53% S: 85.26%
+    def containsDuplicate(self, nums: List[int]) -> bool:
+        nums  = sorted(nums)
+        for i in range(1, len(nums)):
+            if nums[i] == nums[i-1]:
+                return True
+        return False
 
     # (376) T: 32.00% S: 5.16%
     def wiggleMaxLength(self, nums: List[int]) -> int:
@@ -432,6 +441,64 @@ class Solution:
                 break
         return result
 
+# (355) T: 80.57% S: 5.38%
+class Twitter:
+    def __init__(self):
+        self.userList = {}
+        self.tweetList = {}
+        
+    def postTweet(self, userId: int, tweetId: int) -> None:
+        if userId not in self.tweetList:
+            self.tweetList[userId] = [[tweetId, datetime.now()]]
+        else:
+            self.tweetList[userId].append([tweetId, datetime.now()])
+        
+
+    def getNewsFeed(self, userId: int) -> List[int]:
+        tweets = []
+        if userId not in self.userList:
+            self.userList[userId] = set()
+        if userId not in self.tweetList:
+            self.tweetList[userId] = []
+        for follower in self.userList[userId]:
+            tweets.extend(self.tweetList[follower])
+        tweets.extend(self.tweetList[userId])
+        tweets = sorted(tweets, key=(lambda x: x[1]), reverse=True)
+        result = []
+        for tweet in tweets:
+            result.append(tweet[0])
+        return result[0:10]
+
+    def follow(self, followerId: int, followeeId: int) -> None:
+        if followeeId == followerId:
+            return
+        if followerId not in self.tweetList:
+            self.tweetList[followerId] = []
+        if followeeId not in self.tweetList:
+            self.tweetList[followeeId] = []
+        if followerId not in self.userList:
+            self.userList[followerId] = set([followeeId])
+        else:
+            self.userList[followerId].add(followeeId)
+        """
+        Follower follows a followee. If the operation is invalid, it should be a no-op.
+        """
+        
+
+    def unfollow(self, followerId: int, followeeId: int) -> None:
+        if followeeId == followerId:
+            return
+        if followerId not in self.userList:
+            self.userList[followerId] = set()
+            return
+        if followeeId not in self.userList[followerId]:
+            return
+        self.userList[followerId].remove(followeeId)
+        """
+        Follower unfollows a followee. If the operation is invalid, it should be a no-op.
+        """
+        
+
 
 solution = Solution()
 
@@ -449,3 +516,4 @@ solution = Solution()
 # print(solution.maxScore(cardPoints = [1,79,80,1,1,1,200,1], k = 3)) # 1423
 # print(solution.minSwaps(grid = [[0,0,1],[1,1,0],[1,0,0]])) # 1536
 # print(solution.findKthPositive(arr = [1,2,3,4], k = 2)) # 1539
+
