@@ -60,6 +60,19 @@ class Solution:
                 elif len(words[i]) > len(words[j]):
                     pass
     
+    # (49) T: 82.75% S: 20.70%
+    def groupAnagrams(self, strs: List[str]) -> List[List[str]]:
+        results = {}
+        for s in strs:
+            if ''.join(sorted(s)) not in results:
+                results[''.join(sorted(s))] = [s]
+            else:
+                results[''.join(sorted(s))].append(s)
+        results_list = []
+        for result in results.values():
+            results_list.append(result)
+        return results_list
+            
     # (62) T: 86.08% S: 61.19%
     def uniquePaths(self, m: int, n: int) -> int:
         M, m = max(m, n)-1, min(m, n)-1
@@ -114,7 +127,15 @@ class Solution:
             if self.existHelper(board, word[1:], start, map) == True:
                 return True
         return False
-            
+
+    # (100) T: 7.89% S: 5.09%
+    def isSameTree(self, p: TreeNode, q: TreeNode) -> bool:
+        if p == None and q == None:
+            return True
+        if (p == None and q != None) or (p != None and q == None):
+            return False
+        return p.val == q.val and self.isSameTree(p.left, q.left) and self.isSameTree(p.right, q.right)
+
     # (118) T: 32.98% S: 43.39%
     def generate(self, numRows: int) -> List[List[int]]:
         result = [[1], [1, 1]]
@@ -160,7 +181,7 @@ class Solution:
         if (result_nums[-1]-result_nums[-2]) * (refine_nums[-1]-result_nums[-1]) < 0:
             result_nums.append(refine_nums[-1])
         return len(result_nums)
-                
+
     # (621) T: 61.97% S: 43.87%
     def leastInterval(self, tasks: List[str], n: int) -> int:
         if n == 0:
@@ -501,11 +522,16 @@ class Twitter:
 
 
 solution = Solution()
-
+# print(solution.groupAnagrams(["eat", "tea", "tan", "ate", "nat", "bat"])) # 49
 # print(solution.uniquePaths(5, 1)) # 62
 # print(solution.exist([["A","B","C","E"],["S","F","E","S"],["A","D","E","E"]], "ABCEFSADEESE")) # 79
 # print(solution.generate(5)) # 118
 # print(solution.wiggleMaxLength([1,2,3,4,5,6,7,8,9])) # 376
+print(solution.findDiagonalOrder([
+ [ 1, 2, 3 ],
+ [ 4, 5, 6 ],
+ [ 7, 8, 9 ]
+]))
 # print(solution.leastInterval(["A","A","A","B","B","B"], 2)) # 621
 # print(solution.predictPartyVictory("RD")) # 649
 # print(solution.hasAlternatingBits(10)) # 693
