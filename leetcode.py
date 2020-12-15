@@ -258,7 +258,25 @@ class Solution:
                 if i < len(s1) and j < len(s2) and s1[i] == s2[j]:
                         note[i+1][j+1] = note[i][j]
         return note[len(s1)][len(s2)]
-                
+
+    # (738) T: 40.91% S: 5.70%          
+    def monotoneIncreasingDigits(self, N: int) -> int:
+        rawNum = str(N)
+        mark = False
+        for i in range(len(rawNum)):
+            if rawNum[i] == '0':
+                rawNum = rawNum[:i] + '0'*(len(rawNum)-i)
+                mark = True
+                break
+        if mark:
+            N = int(rawNum)-1
+
+        strNum = str(N)
+        for i in range(len(strNum)-1, 0, -1):
+            if strNum[i] < strNum[i-1]:
+                strNum = str(int(strNum[:i])-1) + '9'*(len(strNum)-i)
+        return int(strNum)
+
     # (757) T: 100.00% S: 100.00%
     def intersectionSizeTwo(self, intervals: List[List[int]]) -> int:
         intervals.sort()
@@ -527,15 +545,11 @@ solution = Solution()
 # print(solution.exist([["A","B","C","E"],["S","F","E","S"],["A","D","E","E"]], "ABCEFSADEESE")) # 79
 # print(solution.generate(5)) # 118
 # print(solution.wiggleMaxLength([1,2,3,4,5,6,7,8,9])) # 376
-print(solution.findDiagonalOrder([
- [ 1, 2, 3 ],
- [ 4, 5, 6 ],
- [ 7, 8, 9 ]
-]))
 # print(solution.leastInterval(["A","A","A","B","B","B"], 2)) # 621
 # print(solution.predictPartyVictory("RD")) # 649
 # print(solution.hasAlternatingBits(10)) # 693
 # print(solution.minimumDeleteSum(s1 = "delete", s2 = "leet")) # 721
+# print(solution.monotoneIncreasingDigits(989998)) # 738
 # print(solution.intersectionSizeTwo([[33,44],[42,43],[13,37],[24,33],[24,33],[25,48],[10,47],[18,24],[29,37],[7,34]])) # 757
 # print(solution.splitIntoFibonacci("539834657215398346785398346991079669377161950407626991734534318677529701785098211336528511")) # 842
 # print(solution.matrixScore([[0,0,1,1],[1,0,1,0],[1,1,0,0]])) # 861
