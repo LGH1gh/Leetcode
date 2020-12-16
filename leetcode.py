@@ -161,6 +161,24 @@ class Solution:
                 return True
         return False
 
+    # (290) T: 14.16% S: 5.37%
+    def wordPattern(self, pattern: str, s: str) -> bool:
+        strList = s.split(' ')
+        if len(strList) != len(pattern):
+            return False
+        patternDict = {}
+        strDict = {}
+        for i in range(len(strList)):
+            if strList[i] not in patternDict and pattern[i] not in strDict:
+                patternDict[strList[i]] = pattern[i]
+                strDict[pattern[i]] = strList[i]
+            else:
+                if strList[i] not in patternDict or patternDict[strList[i]] != pattern[i]:
+                    return False
+                if pattern[i] not in strDict or strDict[pattern[i]] != strList[i]:
+                    return False
+        return True
+
     # (376) T: 32.00% S: 5.16%
     def wiggleMaxLength(self, nums: List[int]) -> int:
         if len(nums) == 0:
@@ -544,6 +562,7 @@ solution = Solution()
 # print(solution.uniquePaths(5, 1)) # 62
 # print(solution.exist([["A","B","C","E"],["S","F","E","S"],["A","D","E","E"]], "ABCEFSADEESE")) # 79
 # print(solution.generate(5)) # 118
+# print(solution.wordPattern("abba","dog cat cat fish"))
 # print(solution.wiggleMaxLength([1,2,3,4,5,6,7,8,9])) # 376
 # print(solution.leastInterval(["A","A","A","B","B","B"], 2)) # 621
 # print(solution.predictPartyVictory("RD")) # 649
