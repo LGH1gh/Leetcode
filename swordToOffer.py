@@ -1,4 +1,5 @@
 from typing import List
+import math
 
 class TreeNode:
     def __init__(self, x):
@@ -12,6 +13,24 @@ class ListNode:
         self.next = None
 
 class Solution:
+    # (10-I) T: 92.74% S: 20.30%
+    def fib(self, n: int) -> int:
+        if n == 0:
+            return 0
+        if n == 1:
+            return 1
+        a, b = 0, 1
+        for i in range(2, n+1):
+            a, b = b, a+b
+        return b % (10**9+7)
+    # (10-II) T: 92.79% S: 12.91%
+    def numWays(self, n: int) -> int:
+        if n == 0 or n == 1:
+            return 1
+        a, b = 1, 1
+        for i in range(2, n+1):
+            a, b = b, a+b
+        return b % (10**9+7)
 
     # (47) T: 97.59% S: 6.70%
     def maxValue(self, grid: List[List[int]]) -> int:
@@ -72,3 +91,14 @@ class Solution:
             return self.isBalancedHeight(root.left) < 2
         else:
             return abs(self.isBalancedHeight(root.left)-self.isBalancedHeight(root.right)) < 2 and self.isBalanced(root.left) and self.isBalanced(root.right)
+
+    # (58) T: 40.94% S: 17.03%
+    def reverseLeftWords(self, s: str, n: int) -> str:
+        s = ''.join(reversed(s))
+        s = ''.join(reversed(s[:-n])) + ''.join(reversed(s[-n:]))
+        return s
+
+    # (64) T: 36.67% S: 12.08%
+    def sumNums(self, n: int) -> int:
+        return n > 0 and self.sumNums(n-1) + n
+

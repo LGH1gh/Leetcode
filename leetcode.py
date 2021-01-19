@@ -1,5 +1,5 @@
 import math
-from typing import List
+from typing import List, Dict
 from datetime import datetime
 
 
@@ -14,6 +14,26 @@ class ListNode:
         self.val = x
         self.next = None
 
+class UnionFindSet:
+    def __init__(self, count):
+        self.data = list(range(count))
+        self.size = [1 for _ in range(count)]
+    
+    def find(self, x):
+        if self.data[x] != x:
+            self.data[x] = self.find(self.data[x])
+        return self.data[x]
+    
+    def union(self, x, y):
+        x_root = self.find(x)
+        y_root = self.find(y)
+        self.data[x_root] = y_root
+        if x_root != y_root: 
+            self.size[y_root] += self.size[x_root]
+    
+    def getSize(self, x):
+        x_root = self.find(x)
+        return self.size[x_root]
 class Solution:
     # (1) T: 45.67% S: 14.61%
     def twoSum(self, nums: List[int], target: int) -> List[int]:
@@ -28,7 +48,6 @@ class Solution:
                 j -= 1
             else:
                 i += 1
-
     # (2) T: 87.76% S: 6.60%
     def addTwoNumbers(self, l1: ListNode, l2: ListNode) -> ListNode:
         i = l3 = ListNode(-1)
@@ -62,8 +81,7 @@ class Solution:
                 i, l1, l2 = i.next, l1.next, l2.next
         if mark:
             i.next = ListNode(1)
-        return l3.next
-            
+        return l3.next            
     # (3) T: 67.29% S: 5.22%
     def lengthOfLongestSubstring(self, s: str) -> int:
         i = 0
@@ -105,7 +123,6 @@ class Solution:
                 if result[0] < (temp-1)*2+2:
                     result = ((temp-1)*2+2, s[i-temp:i+temp])
         return result[1]
-
     # (6) T: 79.69% S: 29.66%
     def convert(self, s: str, numRows: int) -> str:
         result = ["" for _ in range(numRows)]
@@ -123,7 +140,6 @@ class Solution:
                 index = index + 2
                 delta = 1
         return "".join(result)
-
     # (7) T: 74.27% S: 16.90%
     def reverse(self, x: int) -> int:
         if x == 0:
@@ -148,7 +164,54 @@ class Solution:
         result = []
         letterCombinationsHelper(digits, digit2vocab, result, "")
         return result
-
+    # (18) T: 61.86% S: 17.08%
+    def fourSum(self, nums: List[int], target: int) -> List[List[int]]:
+        nums.sort()
+        result = []
+        print(nums)
+        for a in range(len(nums)-3):
+            if a != 0 and nums[a-1] == nums[a]:
+                continue
+            for b in range(a+1, len(nums)-2):
+                if b != a+1 and nums[b-1] == nums[b]:
+                    continue
+                c, d = b+1, len(nums)-1
+                if nums[a] + nums[b] + nums[c] + nums[c+1] > target or nums[a] + nums[b] + nums[d-1] + nums[d] < target:
+                    continue
+                while c < d:
+                    if d != len(nums)-1 and nums[d] == nums[d+1]:
+                        d -= 1
+                        continue
+                    if c != b+1 and nums[c] == nums[c-1]:
+                        c += 1
+                        continue
+                    if nums[a] + nums[b] + nums[c] + nums[d] == target:
+                        result.append([nums[a], nums[b], nums[c], nums[d]])
+                        c, d = c+1, d-1
+                    elif nums[a] + nums[b] + nums[c] + nums[d] > target:
+                        d -= 1
+                    else:
+                        c += 1                       
+        return result
+                    
+    # (21) T: 88.50% S: 23.71%
+    def mergeTwoLists(self, l1: ListNode, l2: ListNode) -> ListNode:
+        temp = l3 = ListNode(-1)
+        while l1 != None or l2 != None:
+            if l1 == None:
+                temp.next = l2
+                temp, l2 = temp.next, l2.next
+            elif l2 == None:
+                temp.next = l1
+                temp, l1 = temp.next, l1.next
+            else:
+                if l1.val > l2.val:
+                    temp.next = l2
+                    temp, l2 = temp.next, l2.next
+                else:
+                    temp.next = l1
+                    temp, l1 = temp.next, l1.next
+        return l3.next
     # (22) T: 71.53% S: 13.65%
     def generateParenthesis(self, n: int) -> List[str]:
         if n == 0:
@@ -179,7 +242,6 @@ class Solution:
         result = []
         combinationSumHelper(candidates, target, 0, result, [])
         return result
-
     # (40) T: 89.60% S: 6.31%
     def combinationSum2(self, candidates: List[int], target: int) -> List[List[int]]:
         if target == 0:
@@ -198,7 +260,6 @@ class Solution:
         result = []
         combinationSum2Helper(candidates, target, result, [])
         return result
-
     # (41) T: 83.32% S: 11.19%
     def firstMissingPositive(self, nums: List[int]) -> int:
         if len(nums) == 0:
@@ -224,7 +285,6 @@ class Solution:
         result = []
         permuteHelper(nums, result, [])
         return result
-
     # (47) T: 77.31% S: 21.21%
     def permuteUnique(self, nums: List[int]) -> List[List[int]]:
         if len(nums) == 0:
@@ -241,7 +301,6 @@ class Solution:
         result = []
         permuteUniqueHelper(nums, result, [])
         return result
-
     # (48) T: 56.92% S: 9.29%
     def rotate(self, matrix: List[List[int]]) -> None:
         for i in range(math.floor(len(matrix)/2)):
@@ -250,7 +309,6 @@ class Solution:
         for i in range(len(matrix)):
             for j in range(i+1, len(matrix)):
                 matrix[i][j], matrix[j][i] = matrix[j][i], matrix[i][j]
-
     # (49) T: 82.75% S: 20.70%
     def groupAnagrams(self, strs: List[str]) -> List[List[str]]:
         results = {}
@@ -432,7 +490,6 @@ class Solution:
                 return False
             runner = runner.next
         return True
-
     # (142) T: 73.98% S: 5.09%
     def detectCycle(self, head: ListNode) -> ListNode:
         if head == None:
@@ -457,6 +514,20 @@ class Solution:
             walker = walker.next
         return marker
 
+    # (188) T: 13.66% S: 8.60%
+    def maxProfit4(self, k: int, prices: List[int]) -> int:
+        # length -> 交易日, k+1 -> 交易次数, 2 -> 是否买入(0:未买入, 1买入)
+        if len(prices) < 2:
+            return 0
+        dp = [[[0 for _ in range(2)] for _ in range(k+1)] for _ in range(len(prices))]
+        for i in range(k):
+            dp[0][i][1] = -prices[0]
+        for i in range(1, len(prices)):
+            dp[i][k][0] = dp[i-1][k][0]
+            for j in range(k):
+                dp[i][j][0] = max(dp[i-1][j][1]+prices[i], dp[i-1][j][0])
+                dp[i][j][1] = max(dp[i-1][j+1][0]-prices[i], dp[i-1][j][1])
+        return dp[-1][0][0]
     # (189) T: 91.27% S: 18.87%
     def rotate(self, nums: List[int], k: int) -> None:
         nums[:] = nums[-k % len(nums):] + nums[:-k % len(nums)]
@@ -864,6 +935,22 @@ class Solution:
         else:
             return "Radiant"
 
+    # (674) T: 63.81% S: 5.18%
+    def findLengthOfLCIS(self, nums: List[int]) -> int:
+        if len(nums) == 0:
+            return 0
+        result = 1
+        dp = [0 for _ in range(len(nums))]
+        dp[0] = 1
+        for i in range(1, len(nums)):
+            if nums[i] > nums[i-1]:
+                dp[i] = dp[i-1]+1
+            else:
+                dp[i] = 1
+            if dp[i] > result:
+                result = dp[i]
+        return result
+
     # (693) T: 94.88% S: 29.85%
     def hasAlternatingBits(self, n: int) -> bool:
         flag = -1
@@ -911,7 +998,7 @@ class Solution:
             dp2[i] = max(dp2[i-1], dp1[i-1] + prices[i] - fee)
         return dp2[n-1]
 
-    # (721, dp) T: 5.08% S: 45.05%
+    # (712, dp) T: 5.08% S: 45.05%
     def minimumDeleteSum(self, s1: str, s2: str) -> int:
         note = [[-1]*(len(s2)+1) for i in range(len(s1)+1)]
         note[0][0] = 0
@@ -928,6 +1015,31 @@ class Solution:
                 if i < len(s1) and j < len(s2) and s1[i] == s2[j]:
                         note[i+1][j+1] = note[i][j]
         return note[len(s1)][len(s2)]
+
+    # (721) T: 35.73% S: 20.35%
+    def accountsMerge(self, accounts: List[List[str]]) -> List[List[str]]:
+        emails = dict()
+        index = 0
+        for i in range(len(accounts)):
+            for j in range(1, len(accounts[i])):
+                emails[accounts[i][j]] = index
+                index += 1
+        ufs = UnionFindSet(len(accounts)*30 + len(accounts) + 1)
+        for i in range(len(accounts)):
+            for j in range(1, len(accounts[i])):
+                ufs.union(emails[accounts[i][j]], len(accounts)*30+i+1)
+        result_accounts = dict()
+        for key in emails.keys():
+            if ufs.find(emails[key]) - len(accounts)*30 not in result_accounts:
+                result_accounts[ufs.find(emails[key]) - len(accounts)*30] = [key]
+            else:
+                result_accounts[ufs.find(emails[key]) - len(accounts)*30].append(key)
+        result = []
+        for key in result_accounts.keys():
+            email = [accounts[key-1][0]] + result_accounts[key]
+            email.sort()
+            result.append(email)
+        return result
 
     # (738) T: 40.91% S: 5.70%          
     def monotoneIncreasingDigits(self, N: int) -> int:
@@ -1012,6 +1124,69 @@ class Solution:
                 temp_count += 1
         return result + temp_num + 1
             
+    # (803) T: 26.92% S: 79.17%       
+    def hitBricks(self, grid: List[List[int]], hits: List[List[int]]) -> List[int]:
+        for i in range(len(hits)):
+            if grid[hits[i][0]][hits[i][1]] == 0:
+                hits[i] = [-1, -1]
+            else:
+                grid[hits[i][0]][hits[i][1]] = 0
+        size = len(grid) * len(grid[0])
+        union_find_size = UnionFindSet(size + 1)
+
+        for i in range(len(grid[0])):
+            if grid[0][i] == 1:
+                union_find_size.union(i, size)
+
+        for i in range(1, len(grid)):
+            for j in range(len(grid[i])):
+                if grid[i][j] == 0:
+                    continue
+                if grid[i-1][j] == 1:
+                    union_find_size.union(i*len(grid[0])+j, (i-1)*len(grid[0])+j)
+                if j != 0 and grid[i][j-1] == 1:
+                    union_find_size.union(i*len(grid[0])+j, i*len(grid[0])+j-1)
+        result = []
+        adjs = [[1, 0], [-1, 0], [0, -1], [0, 1]]
+        for i in range(len(hits)-1, -1, -1):
+            if hits[i] == [-1, -1]:
+                result.append(0)
+                continue
+            origin = union_find_size.getSize(size)
+            if hits[i][0] == 0:
+                union_find_size.union(hits[i][1], size)
+            for adj in adjs:
+                x = hits[i][0] + adj[0]
+                y = hits[i][1] + adj[1]
+                if x >= 0 and x < len(grid) and y >= 0 and y < len(grid[0]) and grid[x][y] == 1:
+                    union_find_size.union(x*len(grid[0])+y, hits[i][0]*len(grid[0])+hits[i][1])
+            current = union_find_size.getSize(size)
+            result.append(max(0, current-origin-1))
+            grid[hits[i][0]][hits[i][1]] = 1
+            # print(union_find_size.data)
+            # print(union_find_size.size)
+        result.reverse()
+        return result
+ 
+    # (811) T: 67.29% S: 5.36%
+    def subdomainVisits(self, cpdomains: List[str]) -> List[str]:
+        cpdomains = [cpdomains[i].split(' ') for i in range(len(cpdomains))]
+        for i in range(len(cpdomains)):
+            cpdomains[i][1] = cpdomains[i][1].split('.')
+            # print(cpdomains[i][1])
+            cpdomains[i][1] = ['.'.join(cpdomains[i][1][j:]) for j in range(len(cpdomains[i][1]))]
+        domain_count = dict()
+        for i in range(len(cpdomains)):
+            for j in range(len(cpdomains[i][1])):
+                if cpdomains[i][1][j] not in domain_count:
+                    domain_count[cpdomains[i][1][j]] = int(cpdomains[i][0])
+                else:
+                    domain_count[cpdomains[i][1][j]] += int(cpdomains[i][0])
+        result = []
+        for key in domain_count.keys():
+            result.append(' '.join([str(domain_count[key]), key]))
+        return result
+
     # (830) T: 54.27% S: 13.68%
     def largeGroupPositions(self, s: str) -> List[List[int]]:
         result = []
@@ -1061,6 +1236,34 @@ class Solution:
                     return result
         return []
 
+    # (847) T: 96.74% S: 53.04%
+    def robotSim(self, commands: List[int], obstacles: List[List[int]]) -> int:
+        reform_obstacles = {}
+        for obstacle in obstacles:
+            if obstacle[0] not in reform_obstacles:
+                # print(obstacle)
+                reform_obstacles[obstacle[0]] = {obstacle[1]}
+            else:
+                reform_obstacles[obstacle[0]].add(obstacle[1])
+        directions = [[0, 1], [1, 0], [0, -1], [-1, 0]]
+        position = [0, 0]
+        index = 0
+        result = 0
+        for i in range(len(commands)):
+            if commands[i] == -1:
+                index = (index + 1) % len(directions)
+            elif commands[i] == -2:
+                index = (index - 1) % len(directions)
+            else:
+                for j in range(commands[i]):
+                    position = [position[0]+directions[index][0], position[1]+directions[index][1]]
+                    # print(reform_obstacles)
+                    if position[0] in reform_obstacles and position[1] in reform_obstacles[position[0]]:
+                        position = [position[0]-directions[index][0], position[1]-directions[index][1]]
+                        break
+            result = max(result, position[0]*position[0] + position[1]*position[1])
+        return result
+
     # (860) T: 86.23% S: 33.77%
     def lemonadeChange(self, bills: List[int]) -> bool:
         dollar5, dollar10, dollar20 = 0, 0, 0
@@ -1109,6 +1312,95 @@ class Solution:
             result += int(str(''.join(A[i])), 2)
         return result
 
+    # (1018) T: 66.45% S: 16.56%
+    def prefixesDivBy5(self, A: List[int]) -> List[bool]:
+        sum = 0
+        factor = 1
+        result = []
+        for i in range(len(A)):
+            sum += factor * A[i]
+            factor = factor * 2
+            if sum % 5 == 0:
+                result.append(True)
+            else:
+                result.append(False)
+        return result
+
+    # (1202) T: 54.78% S: 35.85%
+    def smallestStringWithSwaps(self, s: str, pairs: List[List[int]]) -> str:
+        if len(pairs) == 0:
+            return s
+        pairs_dict = {}
+        for pair in pairs:
+            if pair[0] not in pairs_dict:
+                pairs_dict[pair[0]] = [pair[1]]
+            else:
+                pairs_dict[pair[0]].append(pair[1])
+            if pair[1] not in pairs_dict:
+                pairs_dict[pair[1]] = [pair[0]]
+            else:
+                pairs_dict[pair[1]].append(pair[0])
+        visible = [False for _ in range(len(s))]
+        graph = []
+        for i in range(len(s)):
+            if visible[i] == True or i not in pairs_dict:
+                visible[i] = True
+                continue
+            queue = [i]
+            graph.append(queue)
+            visible[i] = True
+            while len(queue) != 0:
+                temp = []
+                for i in range(len(queue)):
+                    for j in range(len(pairs_dict[queue[i]])):
+                        if visible[pairs_dict[queue[i]][j]] == True:
+                            continue
+                        visible[pairs_dict[queue[i]][j]] = True
+                        graph[-1].append(pairs_dict[queue[i]][j])
+                        temp.append(pairs_dict[queue[i]][j])
+                queue = temp
+        graph_str = []
+        for i in range(len(graph)):
+            temp = []
+            for j in range(len(graph[i])):
+                temp.append(s[graph[i][j]])
+            graph_str.append(temp)
+            graph[i].sort()
+            graph_str[i].sort()
+        result = [s[i] for i in range(len(s))]
+        for i in range(len(graph_str)):
+            for j in range(len(graph_str[i])):
+                result[graph[i][j]] = graph_str[i][j]
+        return ''.join(result)
+
+    # (1232) T: 13.42% S: 5.64%
+    def checkStraightLine(self, coordinates: List[List[int]]) -> bool:
+        mark = False
+        for i in range(1, len(coordinates)):
+            if coordinates[i][0] != coordinates[i-1][0]:
+                mark = True
+                break
+        if not mark:
+            return True
+        mark = False
+        for i in range(1, len(coordinates)):
+            if coordinates[i][1] != coordinates[i-1][1]:
+                mark = True
+                break
+        if not mark:
+            return True
+        if coordinates[1][0] - coordinates[0][0] == 0:
+            return False
+        ratio = (coordinates[1][1] - coordinates[0][1]) / (coordinates[1][0] - coordinates[0][0])
+        mark = False
+        for i in range(2, len(coordinates)):
+            if (coordinates[i][0] - coordinates[0][0]) == 0 or ratio != (coordinates[i][1]-coordinates[0][1]) / (coordinates[i][0] - coordinates[0][0]):
+                mark = True
+                break
+        if not mark:
+            return True
+        return False
+
     # (1283) T: 18.55% S: 42.63%
     def smallestDivisor(self, nums: List[int], threshold: int) -> int:
         min_num, max_num = 1, max(nums)
@@ -1127,6 +1419,17 @@ class Solution:
             return min_num
         return max_num
 
+    # (1288) T: 74.48% S: 36.31%
+    def removeCoveredIntervals(self, intervals: List[List[int]]) -> int:
+        intervals.sort()
+        result_interval = [intervals[0]]
+        for i in range(1, len(intervals)):
+            if result_interval[-1][0] == intervals[i][0]:
+                result_interval[-1] = intervals[i]
+            elif result_interval[-1][1] < intervals[i][1]:
+                result_interval.append(intervals[i])
+        return len(intervals) - len(result_interval)
+        
     # (1305) T: 32.00% S: 64.14%
     def getAllElementsHelper(self, root: TreeNode) -> List[int]:
         if root.left == None and root.right == None:
@@ -1168,6 +1471,25 @@ class Solution:
                     j += 1
         return result
 
+    # (1309) T: 83.63% S: 5.47%
+    def freqAlphabets(self, s: str) -> str:
+        result = ""
+        dictionary = ['','a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z']
+        s = s.split('#')
+        if s[-1] == '':
+            for i in range(len(s)-1):
+                for j in range(len(s[i])-2):
+                    result += dictionary[int(s[i][j])]
+                result += dictionary[int(s[i][-2:])]
+        else:
+            for i in range(len(s)-1):
+                for j in range(len(s[i])-2):
+                    result += dictionary[int(s[i][j])]
+                result += dictionary[int(s[i][-2:])]
+            for j in range(len(s[-1])):
+                result += dictionary[int(s[-1][j])]
+        return result
+
     # (1423) T: 70.38% S: 6.02%
     def maxScore(self, cardPoints: List[int], k: int) -> int:
         score1 = [0, cardPoints[0]]
@@ -1181,6 +1503,17 @@ class Solution:
         for i in range(0, len(score1)):
             if result < score1[i] + score2[k-i]:
                 result = score1[i] + score2[k-i]
+        return result
+
+    # (1431) T: 86.17% S: 17.18%
+    def kidsWithCandies(self, candies: List[int], extraCandies: int) -> List[bool]:
+        result = []
+        max_candies = max(candies)
+        for i in range(len(candies)):
+            if candies[i] + extraCandies >= max_candies:
+                result.append(True)
+            else:
+                result.append(False)
         return result
 
     # (1536) T: 96.55% S: 15.79%
@@ -1218,6 +1551,26 @@ class Solution:
                 break
         return result
 
+    # (1584) T: 81.77% S: 91.77%
+    def minCostConnectPoints(self, points: List[List[int]]) -> int:
+        def distance(a: List[int], b: List[int]):
+            return abs(a[0]-b[0]) + abs(a[1]-b[1])
+        vis = [False for _ in range(len(points))]
+        dis = [10**8 for _ in range(len(points))]
+        now = 0
+        result = 0
+        for i in range(len(points)-1):
+            vis[now] = True
+            for j in range(len(points)):
+                if vis[j] == False:
+                    dis[j] = min(dis[j], distance(points[j], points[now]))
+            index, index_num = -1, 10**8
+            for j in range(len(points)):
+                if vis[j] == False and dis[j] < index_num:
+                    index, index_num = j, dis[j]
+            now = index
+            result += dis[index]
+
     # (1626) T: 93.38% S: 6.60%
     def bestTeamScore(self, scores: List[int], ages: List[int]) -> int:
         people = list(zip(ages, scores))
@@ -1231,7 +1584,38 @@ class Solution:
         # print(dp)
         return max(dp)
 
-        
+    # (1711) T: 63.46% S: 29.92%
+    def countPairs(self, deliciousness: List[int]) -> int:
+        nums = list(set(deliciousness))
+        nums.sort()
+        deliciousness.sort()
+        counts = [0 for _ in range(len(nums))]
+        result = 0
+        targets = [1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536, 131072, 262144, 524288, 1048576, 2097152, 4194304, 8388608, 16777216, 33554432, 67108864, 134217728, 268435456, 536870912, 1073741824, 2147483648]
+        index = 0
+        for i in range(len(deliciousness)):
+            if deliciousness[i] != nums[index]:
+                index += 1
+            counts[index] += 1
+        print(nums)
+        print(counts)
+        for target in targets:
+            i, j = 0, len(nums)-1
+            while i <= j:
+                if nums[i] + nums[j] > target:
+                    j -= 1
+                elif nums[i] + nums[j] < target:
+                    i += 1
+                elif i != j:
+                    result += counts[i] * counts[j]
+                    i, j = i+1, j-1
+                elif counts[i] != 1:
+                    result += int(counts[i] * (counts[i]-1) / 2)
+                    break
+                else:
+                    break
+        return result % (10**9+7)
+                
 
 # (355) T: 80.57% S: 5.38%
 class Twitter:
@@ -1294,7 +1678,7 @@ class Twitter:
 
 solution = Solution()
 # print(solution.lengthOfLongestSubstring("abcabcbb")) # 3
-print(solution.firstMissingPositive([3,4,-1,1])) # 41
+# print(solution.firstMissingPositive([3,4,-1,1])) # 41
 # print(solution.groupAnagrams(["eat", "tea", "tan", "ate", "nat", "bat"])) # 49
 # print(solution.uniquePaths(5, 1)) # 62
 # print(solution.exist([["A","B","C","E"],["S","F","E","S"],["A","D","E","E"]], "ABCEFSADEESE")) # 79
@@ -1316,15 +1700,21 @@ print(solution.firstMissingPositive([3,4,-1,1])) # 41
 # print(solution.predictPartyVictory("RD")) # 649
 # print(solution.hasAlternatingBits(10)) # 693
 # print(solution.maxProfit(prices = [1, 3, 2, 8, 4, 9], fee = 2)) # 714
-# print(solution.minimumDeleteSum(s1 = "delete", s2 = "leet")) # 721
+# print(solution.minimumDeleteSum(s1 = "delete", s2 = "leet")) # 712
+# print(solution.accountsMerge(accounts = [["John", "johnsmith@mail.com", "john00@mail.com"], ["John", "johnnybravo@mail.com"], ["John", "johnsmith@mail.com", "john_newyork@mail.com"], ["Mary", "mary@mail.com"]])) # 721
 # print(solution.monotoneIncreasingDigits(989998)) # 738
 # print(solution.intersectionSizeTwo([[33,44],[42,43],[13,37],[24,33],[24,33],[25,48],[10,47],[18,24],[29,37],[7,34]])) # 757
 # print(solution.minCostClimbingStairs(cost = [1, 100, 1, 1, 1, 100, 1, 1, 100, 1])) #746
 # print(solution.numRabbits([1, 1, 2])) # 781
+# print(solution.hitBricks(grid = [[1,0,0,0],[1,1,1,0]], hits = [[1,0]])) # 803
+# print(solution.subdomainVisits(["9001 discuss.leetcode.com"])) # 811
 # print(solution.splitIntoFibonacci("539834657215398346785398346991079669377161950407626991734534318677529701785098211336528511")) # 842
 # print(solution.matrixScore([[0,0,1,1],[1,0,1,0],[1,1,0,0]])) # 861
+# print(solution.smallestStringWithSwaps(s = "dcab", pairs = [[0,3],[1,2],[0,2]])) # 1202
+# print(solution.removeCoveredIntervals([[1,4],[3,6],[2,8], [1,3]])) # 1288
 # print(solution.maxScore(cardPoints = [1,79,80,1,1,1,200,1], k = 3)) # 1423
 # print(solution.minSwaps(grid = [[0,0,1],[1,1,0],[1,0,0]])) # 1536
 # print(solution.findKthPositive(arr = [1,2,3,4], k = 2)) # 1539
 # print(solution.bestTeamScore([4,5,6,5], [2,1,2,1])) # 1626
+
 
