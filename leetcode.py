@@ -1,5 +1,5 @@
 import math
-from typing import List, Dict
+from typing import List, Dict, NoReturn
 from datetime import datetime
 
 
@@ -872,6 +872,23 @@ class Solution:
             result += 1
         return result
 
+    # (599) T: 60.03% S: 8.68%
+    def findRestaurant(self, list1: List[str], list2: List[str]) -> List[str]:
+        min_index = 1000000
+        restaurants = dict()
+        for i in range(len(list1)):
+            restaurants[list1[i]] = -i
+        for j in range(len(list2)):
+            if list2[j] in restaurants:
+                restaurants[list2[j]] = -restaurants[list2[j]] + j
+                if restaurants[list2[j]] < min_index:
+                    min_index = restaurants[list2[j]]
+        result = []
+        for key in restaurants.keys():
+            if restaurants[key] == min_index:
+                result.append(key)
+        return result
+
     # (605) T: 63.02% S: 5.01%
     def canPlaceFlowers(self, flowerbed: List[int], n: int) -> bool:
         str_flowerbed = [str(x) for x in flowerbed]
@@ -902,6 +919,11 @@ class Solution:
             return min_count
         else:
             return len(tasks)
+
+    # (628) T: 29.28% S: 5.13%
+    def maximumProduct(self, nums: List[int]) -> int:
+        nums.sort()
+        return max(nums[0]*nums[1]*nums[2], nums[0]*nums[1]*nums[-1], nums[-1]*nums[-2]*nums[-3])
 
     # (649) T: 75.00% S: 41.10%
     def predictPartyVictory(self, senate: str) -> str:
@@ -934,6 +956,28 @@ class Solution:
             return "Dire"
         else:
             return "Radiant"
+
+    # (671) T: 24.49% S: 5.97%
+    def findSecondMinimumValue(self, root: TreeNode) -> int:
+        min_num = root.val
+        queue = [root]
+        nums = []
+        while len(queue) != 0:
+            temp = []
+            for i in range(len(queue)):
+                if queue[i].left != None and queue[i].left.val == min_num:
+                    temp.append(queue[i].left)
+                elif queue[i].left != None and queue[i].left.val != min_num:
+                    nums.append(queue[i].left.val)
+                if queue[i].right != None and queue[i].right.val == min_num:
+                    temp.append(queue[i].right)
+                elif queue[i].right != None and queue[i].right.val != min_num:
+                    nums.append(queue[i].right.val)
+            queue = temp
+        if len(nums) == 0:
+            return -1
+        nums.sort()
+        return nums[0]
 
     # (674) T: 63.81% S: 5.18%
     def findLengthOfLCIS(self, nums: List[int]) -> int:
@@ -1311,6 +1355,23 @@ class Solution:
             A[i] = map(lambda x: str(x), A[i])
             result += int(str(''.join(A[i])), 2)
         return result
+
+    # (965) T: 13.17% S: 5.07%
+    def isUnivalTree(self, root: TreeNode) -> bool:
+        queue = [root]
+        while len(queue) != 0:
+            temp = []
+            for i in range(len(queue)):
+                if queue[i].left != None and queue[i].left.val == queue[i].val:
+                    temp.append(queue[i].left)
+                elif queue[i].left != None and queue[i].left.val != queue[i].val:
+                    return False
+                if queue[i].right != None and queue[i].right.val == queue[i].val:
+                    temp.append(queue[i].right)
+                elif queue[i].right != None and queue[i].right.val != queue[i].val:
+                    return False
+            queue = temp
+        return True
 
     # (1018) T: 66.45% S: 16.56%
     def prefixesDivBy5(self, A: List[int]) -> List[bool]:
