@@ -1577,6 +1577,65 @@ class Solution:
                 result.append(False)
         return result
 
+    # (1489) T: 7.14% S: 10.72%
+    def findCriticalAndPseudoCriticalEdges(self, n: int, edges: List[List[int]]) -> List[List[int]]:
+        ufs = UnionFindSet(n)
+        edges = [[edges[i][2], edges[i][0], edges[i][1], i] for i in range(len(edges))]
+        edges.sort()
+        # print(edges)
+        edge_count, edge_weight = 0, 0
+        critical = set()
+        pseudo_critical = set()
+        for i in range(len(edges)):
+            if edge_count == n - 1:
+                break
+            if ufs.find(edges[i][1]) != ufs.find(edges[i][2]):
+                edge_count += 1
+                edge_weight += edges[i][0]
+                pseudo_critical.add(edges[i][3])
+                ufs.union(edges[i][1], edges[i][2])
+        # print(f'{critical}, {pseudo_critical}, {edge_count}, {edge_weight}')
+        for i in range(len(edges)):
+            temp_count, temp_weight = 1, edges[i][0]
+            temp_ufs = UnionFindSet(n)
+            temp_edges = {edges[i][3]}
+            temp_ufs.union(edges[i][1], edges[i][2])
+            for j in range(len(edges)):
+                if i == j:
+                    continue
+                if temp_count == n-1 or temp_weight > edge_weight:
+                    break
+                if temp_ufs.find(edges[j][1]) != temp_ufs.find(edges[j][2]):
+                    temp_count += 1
+                    temp_weight += edges[j][0]
+                    temp_edges.add(edges[j][3])
+                    temp_ufs.union(edges[j][1], edges[j][2])
+            if temp_weight == edge_weight:
+                pseudo_critical = pseudo_critical.union(temp_edges)
+            # print(f'{temp_edges}, {temp_weight}, {edge_weight}, {edges[i]}')
+
+        for i in range(len(edges)):
+            temp_count, temp_weight = 0, 0
+            temp_ufs = UnionFindSet(n)
+            temp_edges = set()
+            for j in range(len(edges)):
+                if i == j:
+                    continue
+                if temp_count == n-1 or temp_weight > edge_weight:
+                    break
+                if temp_ufs.find(edges[j][1]) != temp_ufs.find(edges[j][2]):
+                    temp_count += 1
+                    temp_weight += edges[j][0]
+                    temp_edges.add(edges[j][3])
+                    temp_ufs.union(edges[j][1], edges[j][2])
+            if temp_weight != edge_weight:
+                pseudo_critical.remove(edges[i][3])
+                critical.add(edges[i][3])
+            # print(f'{temp_edges}, {temp_weight}, {edge_weight}, {edges[i]}')
+        
+        # print(f'{edge_count}, {edge_weight}')
+        return [list(critical), list(pseudo_critical)]
+
     # (1536) T: 96.55% S: 15.79%
     def minSwaps(self, grid: List[List[int]]) -> int:
         counts = []
@@ -1774,6 +1833,7 @@ solution = Solution()
 # print(solution.smallestStringWithSwaps(s = "dcab", pairs = [[0,3],[1,2],[0,2]])) # 1202
 # print(solution.removeCoveredIntervals([[1,4],[3,6],[2,8], [1,3]])) # 1288
 # print(solution.maxScore(cardPoints = [1,79,80,1,1,1,200,1], k = 3)) # 1423
+print(solution.findCriticalAndPseudoCriticalEdges(n = 5, edges = [[0,1,1],[1,2,1],[2,3,2],[0,3,2],[0,4,3],[3,4,3],[1,4,6]])) # 1489
 # print(solution.minSwaps(grid = [[0,0,1],[1,1,0],[1,0,0]])) # 1536
 # print(solution.findKthPositive(arr = [1,2,3,4], k = 2)) # 1539
 # print(solution.bestTeamScore([4,5,6,5], [2,1,2,1])) # 1626
