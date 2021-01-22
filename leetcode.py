@@ -2,6 +2,10 @@ import math
 from typing import List, Dict, NoReturn
 from datetime import datetime
 
+class Node:
+    def __init__(self, val = 0, neighbors = None):
+        self.val = val
+        self.neighbors = neighbors if neighbors is not None else []
 
 class TreeNode:
     def __init__(self, x):
@@ -473,7 +477,7 @@ class Solution:
             dp[i][0][0] = max(dp[i-1][0][1]+prices[i], dp[i-1][0][0])
             dp[i][0][1] = max(dp[i-1][1][0]-prices[i], dp[i-1][0][1])
 
-        return dp[-1][0][0]
+        return dp[-1][0][0]        
 
     # (141) T: 14.27% S: 5.10%
     def hasCycle(self, head: ListNode) -> bool:
@@ -532,6 +536,24 @@ class Solution:
     def rotate(self, nums: List[int], k: int) -> None:
         nums[:] = nums[-k % len(nums):] + nums[:-k % len(nums)]
 
+    # (199) T: 37.43% S: 5.73%
+    def rightSideView(self, root: TreeNode) -> List[int]:
+        if root == None:
+            return []
+        queue = [root]
+        result = []
+        while len(queue) > 0:
+            temp_num, temp_queue = [], []
+            for i in range(len(queue)):
+                temp_num.append(queue[i].val)
+                if queue[i].left != None:
+                    temp_queue.append(queue[i].left)
+                if queue[i].right != None:
+                    temp_queue.append(queue[i].right)
+            result.append(temp_num[-1])
+            queue = temp_queue
+        return result
+        
     # (213) T: 58.34% S: 14.25%
     def rob(self, nums: List[int]) -> int:
         if len(nums) == 1:
@@ -1373,6 +1395,46 @@ class Solution:
             queue = temp
         return True
 
+    # (989) T: 96.90% S: 5.21%
+    def addToArrayForm(self, A: List[int], K: int) -> List[int]:
+        k_list = [int(i) for i in str(K)]
+        k_list.reverse()
+        A.reverse()
+        mark = False
+        index = 0
+        result = []
+        print(f'{A}, {k_list}')
+        while index < len(k_list) or index < len(A):
+            if index >= len(k_list) and mark == False:
+                break
+            elif index >= len(A) and mark == False:
+                break
+            elif index >= len(k_list) and mark == True:
+                result.append((A[index]+1) % 10)
+                if A[index]+1 < 10:
+                    mark = False
+            elif index >= len(A) and mark == True:
+                result.append((k_list[index]+1) % 10)
+                if k_list[index]+1 < 10:
+                    mark = False
+            elif mark == False:
+                result.append((A[index] + k_list[index]) % 10)
+                if A[index] + k_list[index] >= 10:
+                    mark = True
+            else:
+                result.append((A[index] + k_list[index] + 1) % 10)
+                if A[index] + k_list[index] + 1 < 10:
+                    mark = False
+            index += 1
+        if index < len(k_list):
+            result.extend(k_list[index:])
+        elif index < len(A):
+            result.extend(A[index:])
+        elif mark == True:
+            result.append("1")
+        result.reverse()
+        return result
+
     # (1018) T: 66.45% S: 16.56%
     def prefixesDivBy5(self, A: List[int]) -> List[bool]:
         sum = 0
@@ -1576,6 +1638,17 @@ class Solution:
             else:
                 result.append(False)
         return result
+
+    # (1464) T: 49.39% S: 5.17%
+    def maxProduct(self, nums: List[int]) -> int:
+        nums = [num-1 for num in nums]
+        a, b = max(nums[0], nums[1]), min(nums[0],nums[1])
+        for i in range(2, len(nums)):
+            if nums[i] > a:
+                a, b = nums[i], a
+            elif nums[i] > b:
+                b = nums[i]
+        return a * b
 
     # (1489) T: 7.14% S: 10.72%
     def findCriticalAndPseudoCriticalEdges(self, n: int, edges: List[List[int]]) -> List[List[int]]:
@@ -1830,10 +1903,11 @@ solution = Solution()
 # print(solution.subdomainVisits(["9001 discuss.leetcode.com"])) # 811
 # print(solution.splitIntoFibonacci("539834657215398346785398346991079669377161950407626991734534318677529701785098211336528511")) # 842
 # print(solution.matrixScore([[0,0,1,1],[1,0,1,0],[1,1,0,0]])) # 861
+print(solution.addToArrayForm([2,7,4], 181))
 # print(solution.smallestStringWithSwaps(s = "dcab", pairs = [[0,3],[1,2],[0,2]])) # 1202
 # print(solution.removeCoveredIntervals([[1,4],[3,6],[2,8], [1,3]])) # 1288
 # print(solution.maxScore(cardPoints = [1,79,80,1,1,1,200,1], k = 3)) # 1423
-print(solution.findCriticalAndPseudoCriticalEdges(n = 5, edges = [[0,1,1],[1,2,1],[2,3,2],[0,3,2],[0,4,3],[3,4,3],[1,4,6]])) # 1489
+# print(solution.findCriticalAndPseudoCriticalEdges(n = 5, edges = [[0,1,1],[1,2,1],[2,3,2],[0,3,2],[0,4,3],[3,4,3],[1,4,6]])) # 1489
 # print(solution.minSwaps(grid = [[0,0,1],[1,1,0],[1,0,0]])) # 1536
 # print(solution.findKthPositive(arr = [1,2,3,4], k = 2)) # 1539
 # print(solution.bestTeamScore([4,5,6,5], [2,1,2,1])) # 1626
