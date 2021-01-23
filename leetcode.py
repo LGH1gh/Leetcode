@@ -38,6 +38,7 @@ class UnionFindSet:
     def getSize(self, x):
         x_root = self.find(x)
         return self.size[x_root]
+
 class Solution:
     # (1) T: 45.67% S: 14.61%
     def twoSum(self, nums: List[int], target: int) -> List[int]:
@@ -872,6 +873,20 @@ class Solution:
             n0, n1 = n1, n0+n1
         return n1
 
+    # (539) T: 56.65% S: 15.35%
+    def findMinDifference(self, timePoints: List[str]) -> int:
+        minutes_timePoints = []
+        for timePoint in timePoints:
+            minutes_timePoints.append(int(timePoint.split(":")[0])*60 + int(timePoint.split(":")[1]))
+        minutes_timePoints.sort()
+        min_difference = minutes_timePoints[1] - minutes_timePoints[0]
+        for i in range(2, len(minutes_timePoints)):
+            if min_difference > minutes_timePoints[i] - minutes_timePoints[i-1]:
+                min_difference = minutes_timePoints[i] - minutes_timePoints[i-1]
+        if minutes_timePoints[0] + 60 * 24 - minutes_timePoints[-1] < min_difference:
+            min_difference = minutes_timePoints[0] + 60 * 24 - minutes_timePoints[-1]
+        return min_difference
+
     # (547) T: 57.07% S: 9.77%
     def findCircleNum(self, isConnected: List[List[int]]) -> int:
         result = 0
@@ -1612,6 +1627,16 @@ class Solution:
             for j in range(len(s[-1])):
                 result += dictionary[int(s[-1][j])]
         return result
+
+    # (1319) T: 21.71% S: 49.22%
+    def makeConnected(self, n: int, connections: List[List[int]]) -> int:
+        if len(connections) < n-1:
+            return -1
+        ufs = UnionFindSet(len(n))
+        for connection in connections:
+            ufs.union(connection[0], connection[1])
+        graphs = {ufs.find(i) for i in range(n)}
+        return len(graphs) - 1
 
     # (1423) T: 70.38% S: 6.02%
     def maxScore(self, cardPoints: List[int], k: int) -> int:
