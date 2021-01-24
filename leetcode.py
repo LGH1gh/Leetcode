@@ -154,7 +154,31 @@ class Solution:
         if (sign == 1 and x > 2**31 - 1) or (sign == -1 and x > 2**31):
             return 0
         return sign * x
-        
+
+    # (15) T: 7.04% S: 25.81%
+    def threeSum(self, nums: List[int]) -> List[List[int]]:
+        nums.sort()
+        result = []
+        # print(nums)
+        for i in range(len(nums)-2):
+            if i != 0 and nums[i] == nums[i-1]:
+                continue
+            j, k = i+1, len(nums)-1
+            while j < k:
+                # print(f'{i}, {j}, {k}')
+                if k != len(nums)-1 and nums[k] == nums[k+1]:
+                    k -= 1
+                elif j != i+1 and nums[j] == nums[j-1]:
+                    j += 1
+                elif nums[i] + nums[j] + nums[k] == 0:
+                    result.append([nums[i], nums[j], nums[k]])
+                    j, k = j+1, k-1
+                elif nums[i] + nums[j] + nums[k] > 0:
+                    k -= 1
+                else:
+                    j += 1
+        return result
+
     # (17) T: 77.90% S: 26.16%
     def letterCombinations(self, digits: str) -> List[str]:
         if len(digits) == 0:
@@ -1638,6 +1662,37 @@ class Solution:
         graphs = {ufs.find(i) for i in range(n)}
         return len(graphs) - 1
 
+    # (1329) T: 91.72% S: 5.88%
+    def diagonalSort(self, mat: List[List[int]]) -> List[List[int]]:
+        refine_mat = []
+        for i in range(len(mat)):
+            x, y = i, 0
+            temp = []
+            while x < len(mat) and y < len(mat[x]):
+                temp.append(mat[x][y])
+                x, y = x+1, y+1
+            refine_mat.append(temp)
+        for j in range(1, len(mat[0])):
+            x, y = 0, j
+            temp = []
+            while x < len(mat) and y < len(mat[0]):
+                temp.append(mat[x][y])
+                x, y = x+1, y+1
+            refine_mat.append(temp)
+        for i in range(len(refine_mat)):
+            refine_mat[i].sort()
+        for i in range(len(mat)):
+            x, y = i, 0
+            while x < len(mat) and y < len(mat[x]):
+                mat[x][y] = refine_mat[i][y]
+                x, y = x+1, y+1
+        for j in range(1, len(mat[0])):
+            x, y = 0, j
+            while x < len(mat) and y < len(mat[0]):
+                mat[x][y] = refine_mat[len(mat)+j-1][x]
+                x, y = x+1, y+1
+        return mat
+        
     # (1423) T: 70.38% S: 6.02%
     def maxScore(self, cardPoints: List[int], k: int) -> int:
         score1 = [0, cardPoints[0]]
@@ -1896,6 +1951,7 @@ class Twitter:
 
 solution = Solution()
 # print(solution.lengthOfLongestSubstring("abcabcbb")) # 3
+print(solution.threeSum([-2,0,0,2,2])) # 15
 # print(solution.firstMissingPositive([3,4,-1,1])) # 41
 # print(solution.groupAnagrams(["eat", "tea", "tan", "ate", "nat", "bat"])) # 49
 # print(solution.uniquePaths(5, 1)) # 62
@@ -1928,9 +1984,10 @@ solution = Solution()
 # print(solution.subdomainVisits(["9001 discuss.leetcode.com"])) # 811
 # print(solution.splitIntoFibonacci("539834657215398346785398346991079669377161950407626991734534318677529701785098211336528511")) # 842
 # print(solution.matrixScore([[0,0,1,1],[1,0,1,0],[1,1,0,0]])) # 861
-print(solution.addToArrayForm([2,7,4], 181))
+# print(solution.addToArrayForm([2,7,4], 181))
 # print(solution.smallestStringWithSwaps(s = "dcab", pairs = [[0,3],[1,2],[0,2]])) # 1202
 # print(solution.removeCoveredIntervals([[1,4],[3,6],[2,8], [1,3]])) # 1288
+# print(solution.diagonalSort(mat = [[3,3,1,1],[2,2,1,2],[1,1,1,2]])) # 1329
 # print(solution.maxScore(cardPoints = [1,79,80,1,1,1,200,1], k = 3)) # 1423
 # print(solution.findCriticalAndPseudoCriticalEdges(n = 5, edges = [[0,1,1],[1,2,1],[2,3,2],[0,3,2],[0,4,3],[3,4,3],[1,4,6]])) # 1489
 # print(solution.minSwaps(grid = [[0,0,1],[1,1,0],[1,0,0]])) # 1536
