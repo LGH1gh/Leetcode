@@ -1017,6 +1017,17 @@ class Solution:
             return "Dire"
         else:
             return "Radiant"
+    # (650) T: 31.62% S: 10.97%
+    def minSteps(self, n: int) -> int:
+        dp = [-1, 0, 2, 3, 4]
+        for i in range(5, n+1):
+            for j in range(2, math.ceil(i/2)+1):
+                if i % j == 0:
+                    dp.append(dp[j]+dp[int(i/j)])
+                    break
+            if len(dp) != i+1:
+                dp.append(i)
+        return dp[n]
 
     # (671) T: 24.49% S: 5.97%
     def findSecondMinimumValue(self, root: TreeNode) -> int:
@@ -1416,6 +1427,31 @@ class Solution:
             A[i] = map(lambda x: str(x), A[i])
             result += int(str(''.join(A[i])), 2)
         return result
+
+    # (959) T: 47.52% S: 35.79%
+    def regionsBySlashes(self, grid: List[str]) -> int:
+        ufs = UnionFindSet(len(grid)*len(grid)*4)
+        for i in range(len(grid)):
+            for j in range(len(grid[i])):
+                # print(f'{i, j}')
+                # print(f'{i*4*len(grid)+j*4}')
+                if grid[i][j] == ' ':
+                    ufs.union(i*4*len(grid)+j*4+1, i*4*len(grid)+j*4)
+                    ufs.union(i*4*len(grid)+j*4+2, i*4*len(grid)+j*4)
+                    ufs.union(i*4*len(grid)+j*4+3, i*4*len(grid)+j*4)
+                elif grid[i][j] == '/':
+                    ufs.union(i*4*len(grid)+j*4+1, i*4*len(grid)+j*4)
+                    ufs.union(i*4*len(grid)+j*4+3, i*4*len(grid)+j*4+2)
+                elif grid[i][j] == '\\':
+                    ufs.union(i*4*len(grid)+j*4+3, i*4*len(grid)+j*4)
+                    ufs.union(i*4*len(grid)+j*4+1, i*4*len(grid)+j*4+2)
+        for i in range(len(grid)):
+            for j in range(len(grid[i])):
+                if j != len(grid[i])-1:
+                    ufs.union(i*4*len(grid)+j*4+3, i*4*len(grid)+(j+1)*4+1)
+                if i != len(grid)-1:
+                    ufs.union(i*4*len(grid)+j*4+2, (i+1)*4*len(grid)+j*4)
+        return len({ufs.find(x) for x in range(len(grid)*len(grid)*4)})
 
     # (965) T: 13.17% S: 5.07%
     def isUnivalTree(self, root: TreeNode) -> bool:
@@ -1951,7 +1987,7 @@ class Twitter:
 
 solution = Solution()
 # print(solution.lengthOfLongestSubstring("abcabcbb")) # 3
-print(solution.threeSum([-2,0,0,2,2])) # 15
+# print(solution.threeSum([-2,0,0,2,2])) # 15
 # print(solution.firstMissingPositive([3,4,-1,1])) # 41
 # print(solution.groupAnagrams(["eat", "tea", "tan", "ate", "nat", "bat"])) # 49
 # print(solution.uniquePaths(5, 1)) # 62
@@ -1984,7 +2020,8 @@ print(solution.threeSum([-2,0,0,2,2])) # 15
 # print(solution.subdomainVisits(["9001 discuss.leetcode.com"])) # 811
 # print(solution.splitIntoFibonacci("539834657215398346785398346991079669377161950407626991734534318677529701785098211336528511")) # 842
 # print(solution.matrixScore([[0,0,1,1],[1,0,1,0],[1,1,0,0]])) # 861
-# print(solution.addToArrayForm([2,7,4], 181))
+print(solution.regionsBySlashes([" /\\"," \\/","\\  "]))# 959
+# print(solution.addToArrayForm([2,7,4], 181)) # 989
 # print(solution.smallestStringWithSwaps(s = "dcab", pairs = [[0,3],[1,2],[0,2]])) # 1202
 # print(solution.removeCoveredIntervals([[1,4],[3,6],[2,8], [1,3]])) # 1288
 # print(solution.diagonalSort(mat = [[3,3,1,1],[2,2,1,2],[1,1,1,2]])) # 1329
