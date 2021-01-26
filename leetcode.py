@@ -155,6 +155,43 @@ class Solution:
             return 0
         return sign * x
 
+    # (9) T: 29.73 S: 12.81%
+    def isPalindrome(self, x: int) -> bool:
+        if x < 0:
+            return False
+        nums = []
+        while x != 0:
+            nums.append(x%10)
+            x = int(x / 10)
+        return nums == nums[::-1]
+
+    # (13) T: 97.55% S: 6.06%
+    def romanToInt(self, s: str) -> int:
+        nums = []
+        dictionary = {'I':1, 'V':5, 'X':10, 'L':50, 'C':100, 'D':500, 'M':1000}
+        for i in range(len(s)):
+            nums.append(dictionary[s[i]])
+        result = 0
+        for i in range(len(nums)-1):
+            if nums[i] >= nums[i+1]:
+                result += nums[i]
+            else:
+                result -= nums[i]
+        result += nums[-1]
+        return result
+    # (14) T: 69.38% S: 12.67%
+    def longestCommonPrefix(self, strs: List[str]) -> str:
+        if strs == []:
+            return ""
+        min_length = min(len(s) for s in strs)
+        result = ""
+        for i in range(min_length):
+            temp = strs[0][i]
+            for j in range(1, len(strs)):
+                if strs[j][i] != temp:
+                    return result
+            result += temp
+        return result
     # (15) T: 7.04% S: 25.81%
     def threeSum(self, nums: List[int]) -> List[List[int]]:
         nums.sort()
@@ -1524,6 +1561,27 @@ class Solution:
                 result.append(False)
         return result
 
+    # (1128) T: 32.96% S: 22.85%
+    def numEquivDominoPairs(self, dominoes: List[List[int]]) -> int:
+        refine_dominoes = {}
+        for domino in dominoes:
+            if domino > domino[::-1]:
+                if ''.join([str(domino_iter) for domino_iter in domino[::-1]]) not in refine_dominoes:
+                    refine_dominoes[''.join([str(domino_iter) for domino_iter in domino[::-1]])] = 1
+                else:
+                    refine_dominoes[''.join([str(domino_iter) for domino_iter in domino[::-1]])] += 1
+            else:
+                if ''.join([str(domino_iter) for domino_iter in domino]) not in refine_dominoes:
+                    refine_dominoes[''.join([str(domino_iter) for domino_iter in domino])] = 1
+                else:
+                    refine_dominoes[''.join([str(domino_iter) for domino_iter in domino])] += 1
+        result = 0
+        for value in refine_dominoes.values():
+            if value != 1:
+                result += int(value * (value-1) / 2)
+        return result
+
+
     # (1202) T: 54.78% S: 35.85%
     def smallestStringWithSwaps(self, s: str, pairs: List[List[int]]) -> str:
         if len(pairs) == 0:
@@ -1825,6 +1883,13 @@ class Solution:
         # print(f'{edge_count}, {edge_weight}')
         return [list(critical), list(pseudo_critical)]
 
+    # (1509) T: 62.74% S: 36.27%
+    def minDifference(self, nums: List[int]) -> int:
+        if len(nums) <= 4:
+            return 0
+        nums.sort()
+        return min(nums[-1]-nums[3], nums[-2]-nums[2], nums[-3]-nums[1], nums[-4]-nums[0])
+
     # (1536) T: 96.55% S: 15.79%
     def minSwaps(self, grid: List[List[int]]) -> int:
         counts = []
@@ -2020,7 +2085,7 @@ solution = Solution()
 # print(solution.subdomainVisits(["9001 discuss.leetcode.com"])) # 811
 # print(solution.splitIntoFibonacci("539834657215398346785398346991079669377161950407626991734534318677529701785098211336528511")) # 842
 # print(solution.matrixScore([[0,0,1,1],[1,0,1,0],[1,1,0,0]])) # 861
-print(solution.regionsBySlashes([" /\\"," \\/","\\  "]))# 959
+# print(solution.regionsBySlashes([" /\\"," \\/","\\  "])) # 959
 # print(solution.addToArrayForm([2,7,4], 181)) # 989
 # print(solution.smallestStringWithSwaps(s = "dcab", pairs = [[0,3],[1,2],[0,2]])) # 1202
 # print(solution.removeCoveredIntervals([[1,4],[3,6],[2,8], [1,3]])) # 1288
