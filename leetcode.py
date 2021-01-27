@@ -259,7 +259,19 @@ class Solution:
                     else:
                         c += 1                       
         return result
-                    
+    # (19) T: 99.54% S: 9.88%
+    def removeNthFromEnd(self, head: ListNode, n: int) -> ListNode:
+        cur, cur_next = head, head
+        for _ in range(n):
+            cur_next = cur_next.next
+        if cur_next == None:
+            return head.next
+        cur_next = cur_next.next
+        while cur_next != None:
+            cur, cur_next = cur.next, cur_next.next
+        cur.next = cur.next.next
+        return head
+
     # (21) T: 88.50% S: 23.71%
     def mergeTwoLists(self, l1: ListNode, l2: ListNode) -> ListNode:
         temp = l3 = ListNode(-1)
@@ -475,6 +487,32 @@ class Solution:
         left_tail.next = None
         return left_head.next
         
+    # (99) T: 13.51% S: 13.89%
+    def maxNumEdgesToRemove(self, n: int, edges: List[List[int]]) -> int:
+        edges_dict = {1: [], 2: [], 3: []}
+        for edge in edges:
+            edges_dict[edge[0]].append([edge[1]-1, edge[2]-1])
+        if len(edges_dict[3]) + len(edges_dict[1]) < n - 1 or len(edges_dict[3]) + len(edges_dict[2]) < n - 1:
+            return -1
+        ufs_alice = UnionFindSet(n)
+        ufs_bob = UnionFindSet(n)
+        count = 0
+        for i in range(len(edges_dict[3])):
+            if ufs_alice.find(edges_dict[3][i][0]) != ufs_alice.find(edges_dict[3][i][1]) and ufs_bob.find(edges_dict[3][i][0]) != ufs_bob.find(edges_dict[3][i][1]):
+                ufs_alice.union(edges_dict[3][i][0], edges_dict[3][i][1])
+                ufs_bob.union(edges_dict[3][i][0], edges_dict[3][i][1])
+                count += 1
+        for i in range(len(edges_dict[2])):
+            if ufs_bob.find(edges_dict[2][i][0]) != ufs_bob.find(edges_dict[2][i][1]):
+                ufs_bob.union(edges_dict[2][i][0], edges_dict[2][i][1])
+                count += 1
+        for i in range(len(edges_dict[1])):
+            if ufs_alice.find(edges_dict[1][i][0]) != ufs_alice.find(edges_dict[1][i][1]):
+                ufs_alice.union(edges_dict[1][i][0], edges_dict[1][i][1])
+                count += 1
+        if len({ufs_alice.find(x) for x in range(n)}) != 1 or len({ufs_bob.find(x) for x in range(n)}) != 1:
+            return -1
+        return len(edges)-count
     # (100) T: 7.89% S: 5.09%
     def isSameTree(self, p: TreeNode, q: TreeNode) -> bool:
         if p == None and q == None:
@@ -2057,6 +2095,7 @@ solution = Solution()
 # print(solution.groupAnagrams(["eat", "tea", "tan", "ate", "nat", "bat"])) # 49
 # print(solution.uniquePaths(5, 1)) # 62
 # print(solution.exist([["A","B","C","E"],["S","F","E","S"],["A","D","E","E"]], "ABCEFSADEESE")) # 79
+print(solution.maxNumEdgesToRemove(n = 4, edges = [[3,1,2],[3,2,3],[1,1,4],[2,1,4]])) # 99
 # print(solution.generate(5)) # 118
 # print(solution.maxProfit3([1,2,3,4,5]))
 # print(solution.rob([0])) # 213
