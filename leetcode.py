@@ -271,7 +271,21 @@ class Solution:
             cur, cur_next = cur.next, cur_next.next
         cur.next = cur.next.next
         return head
-
+    # (20) T: 84.08% S: 34.84%
+    def isValid(self, s: str) -> bool:
+        bracket = []
+        for i in range(len(s)):
+            if s[i] == '(' or s[i] == '{' or s[i] == '[':
+                bracket.append(s[i])
+            elif len(bracket) == 0:
+                return False
+            elif (s[i] == ')' and bracket[-1] != '(') or (s[i] == '}' and bracket[-1] != '{') or (s[i] == ']' and bracket[-1] != '['):
+                return False
+            else:
+                bracket.pop()
+        if len(bracket) != 0:
+            return False
+        return True
     # (21) T: 88.50% S: 23.71%
     def mergeTwoLists(self, l1: ListNode, l2: ListNode) -> ListNode:
         temp = l3 = ListNode(-1)
@@ -774,6 +788,28 @@ class Solution:
                     return False
         return True
         
+    # (309) T: 69.94% S: 8.93%
+    def isAdditiveNumber(self, num: str) -> bool:
+        for i in range(1, len(num)-1):
+            if len(num[:i]) != 1 and num[:i][0] == '0':
+                continue
+            a = int(num[:i])
+            for j in range(i+1, len(num)):
+                if len(num[i:j]) != 1 and num[i:j][0] == '0':
+                    continue
+                b = int(num[i:j])
+                tmp_a, tmp_b = a, b
+                k = j
+                while k < len(num):
+                    tmp_a, tmp_b = tmp_b, tmp_a+tmp_b
+                    if str(tmp_b) == num[k:k+len(str(tmp_b))]:
+                        k += len(str(tmp_b))
+                    else:
+                        break
+                if k == len(num):
+                    return True
+        return False
+
     # (376) T: 32.00% S: 5.16%
     def wiggleMaxLength(self, nums: List[int]) -> int:
         if len(nums) == 0:
@@ -1232,6 +1268,20 @@ class Solution:
             result.append(email)
         return result
 
+    # (724) T: 32.96% S: 5.30%
+    def pivotIndex(self, nums: List[int]) -> int:
+        if nums == []:
+            return -1
+        left = sum(nums[:0])
+        right = sum(nums[1:])
+        for i in range(len(nums)-1):
+            if left == right:
+                return i
+            left, right = left + nums[i], right - nums[i+1]
+        if left == right:
+            return len(nums)-1
+        return -1
+                
     # (738) T: 40.91% S: 5.70%          
     def monotoneIncreasingDigits(self, N: int) -> int:
         rawNum = str(N)
@@ -2095,13 +2145,14 @@ solution = Solution()
 # print(solution.groupAnagrams(["eat", "tea", "tan", "ate", "nat", "bat"])) # 49
 # print(solution.uniquePaths(5, 1)) # 62
 # print(solution.exist([["A","B","C","E"],["S","F","E","S"],["A","D","E","E"]], "ABCEFSADEESE")) # 79
-print(solution.maxNumEdgesToRemove(n = 4, edges = [[3,1,2],[3,2,3],[1,1,4],[2,1,4]])) # 99
+# print(solution.maxNumEdgesToRemove(n = 4, edges = [[3,1,2],[3,2,3],[1,1,4],[2,1,4]])) # 99
 # print(solution.generate(5)) # 118
 # print(solution.maxProfit3([1,2,3,4,5]))
 # print(solution.rob([0])) # 213
 # print(solution.maximalSquare(matrix = [["1","0","1","0","0"],["1","0","1","1","1"],["1","1","1","1","1"],["1","0","0","1","0"]])) # 221
 # print(solution.maxSlidingWindow([1,3,1,2,0,5], 3)) # 239
 # print(solution.wordPattern("abba","dog cat cat fish")) # 290
+print(solution.isAdditiveNumber("101")) # 306
 # print(solution.wiggleMaxLength([1,2,3,4,5,6,7,8,9])) # 376
 # print(solution.findTheDifference(s = "a", t = "aa")) # 389
 # print(solution.decodeString("abc3[cd]xyz")) # 394
@@ -2113,9 +2164,10 @@ print(solution.maxNumEdgesToRemove(n = 4, edges = [[3,1,2],[3,2,3],[1,1,4],[2,1,
 # print(solution.leastInterval(["A","A","A","B","B","B"], 2)) # 621
 # print(solution.predictPartyVictory("RD")) # 649
 # print(solution.hasAlternatingBits(10)) # 693
-# print(solution.maxProfit(prices = [1, 3, 2, 8, 4, 9], fee = 2)) # 714
 # print(solution.minimumDeleteSum(s1 = "delete", s2 = "leet")) # 712
+# print(solution.maxProfit(prices = [1, 3, 2, 8, 4, 9], fee = 2)) # 714
 # print(solution.accountsMerge(accounts = [["John", "johnsmith@mail.com", "john00@mail.com"], ["John", "johnnybravo@mail.com"], ["John", "johnsmith@mail.com", "john_newyork@mail.com"], ["Mary", "mary@mail.com"]])) # 721
+# print(solution.pivotIndex(nums = [1, 7, 3, 6, 5, 6])) # 724
 # print(solution.monotoneIncreasingDigits(989998)) # 738
 # print(solution.intersectionSizeTwo([[33,44],[42,43],[13,37],[24,33],[24,33],[25,48],[10,47],[18,24],[29,37],[7,34]])) # 757
 # print(solution.minCostClimbingStairs(cost = [1, 100, 1, 1, 1, 100, 1, 1, 100, 1])) #746
