@@ -320,6 +320,15 @@ class Solution:
         generateParenthesis(n, 0, 0, result, "")
         return result
 
+    # (26) T: 89.60% S: 32.22%
+    def removeDuplicates(self, nums: List[int]) -> int:
+        index = 0
+        for i in range(1, len(nums)):
+            if nums[i] != nums[index]:
+                nums[index+1] = nums[i]
+                index += 1
+        return index+1
+
     # (39) T: 78.52% S: 5.67%
     def combinationSum(self, candidates: List[int], target: int) -> List[List[int]]:
         if target == 0:
@@ -631,6 +640,16 @@ class Solution:
             marker = marker.next
             walker = walker.next
         return marker
+
+    # (152) T: 69.83% S: 52.26%
+    def maxProduct(self, nums: List[int]) -> int:
+        max_num, min_num, res = nums[0], nums[0], nums[0]
+        for i in range(1, len(nums)):
+            temp = max_num
+            max_num = max(nums[i], nums[i] * max_num, nums[i] * min_num)
+            min_num = min(nums[i], nums[i] * temp, nums[i] * min_num)
+            res = max(max_num, res)
+        return res
 
     # (188) T: 13.66% S: 8.60%
     def maxProfit4(self, k: int, prices: List[int]) -> int:
@@ -1552,6 +1571,21 @@ class Solution:
             A[i] = map(lambda x: str(x), A[i])
             result += int(str(''.join(A[i])), 2)
         return result
+
+    # (888) T: 48.59% S: 39.00%
+    def fairCandySwap(self, A: List[int], B: List[int]) -> List[int]:
+        sum_A, sum_B = sum(A), sum(B)
+        difference = int((sum_A-sum_B) / 2)
+        A.sort(), B.sort()
+        i, j = 0, 0
+        while i < len(A) and j < len(B):
+            if B[j] - A[i] == -difference:
+                return [A[i], B[j]]
+            elif B[j] - A[i] < -difference:
+                j += 1
+            else:
+                i += 1
+        return None
 
     # (959) T: 47.52% S: 35.79%
     def regionsBySlashes(self, grid: List[str]) -> int:
