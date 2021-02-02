@@ -328,6 +328,16 @@ class Solution:
                 nums[index+1] = nums[i]
                 index += 1
         return index+1
+    # (27)
+    def removeElement(self, nums: List[int], val: int) -> int:
+        count = 0
+        for i in range(len(nums)):
+            print(nums)
+            if nums[i] == val:
+                count += 1
+            else:
+                nums[i-count] = nums[i]
+        return len(nums)-count
 
     # (39) T: 78.52% S: 5.67%
     def combinationSum(self, candidates: List[int], target: int) -> List[List[int]]:
@@ -961,6 +971,27 @@ class Solution:
         if root.left != None and root.left.left == None and root.left.right == None:
             return root.left.val + self.sumOfLeftLeaves(root.right)
         return self.sumOfLeftLeaves(root.left) + self.sumOfLeftLeaves(root.right)
+
+    # (424) T: 24.50% S: 5.70%
+    def characterReplacement(self, s: str, k: int) -> int:
+        if s == "":
+            return 0
+        left, max_count = 0, 1
+        count = [0 for _ in range(26)]
+        while left + max_count - 1< len(s):
+            count[ord(s[left+max_count-1]) - ord('A')] += 1
+            if max_count < max(count) + k and left + max_count != len(s):
+                max_count += 1     
+            elif max_count == max(count) + k and left + max_count != len(s):
+                if max(count) == count[ord(s[left+max_count]) - ord('A')]:
+                    max_count += 1
+                else:
+                    count[ord(s[left]) - ord('A')] -= 1
+                    left += 1
+            else:
+                count[ord(s[left]) - ord('A')] -= 1
+                left += 1
+        return max_count
 
     # (435) T: 38.24% S: 10.70%
     def eraseOverlapIntervals(self, intervals: List[List[int]]) -> int:
@@ -1946,6 +1977,18 @@ class Solution:
                 b = nums[i]
         return a * b
 
+    # (1475) T: 7.18% S: 38.37%
+    def finalPrices(self, prices: List[int]) -> List[int]:
+        res = []
+        for i in range(len(prices)):
+            for j in range(i+1, len(prices)):
+                if prices[j] <= prices[i]:
+                    res.append(prices[i]-prices[j])
+                    break
+            if len(res) == i:
+                res.append(prices[i])
+        return res
+
     # (1489) T: 7.14% S: 10.72%
     def findCriticalAndPseudoCriticalEdges(self, n: int, edges: List[List[int]]) -> List[List[int]]:
         ufs = UnionFindSet(n)
@@ -2175,6 +2218,7 @@ class Twitter:
 solution = Solution()
 # print(solution.lengthOfLongestSubstring("abcabcbb")) # 3
 # print(solution.threeSum([-2,0,0,2,2])) # 15
+print(solution.removeElement([0,1,2,2,3,0,4,2],2)) # 27
 # print(solution.firstMissingPositive([3,4,-1,1])) # 41
 # print(solution.groupAnagrams(["eat", "tea", "tan", "ate", "nat", "bat"])) # 49
 # print(solution.uniquePaths(5, 1)) # 62
@@ -2186,7 +2230,7 @@ solution = Solution()
 # print(solution.maximalSquare(matrix = [["1","0","1","0","0"],["1","0","1","1","1"],["1","1","1","1","1"],["1","0","0","1","0"]])) # 221
 # print(solution.maxSlidingWindow([1,3,1,2,0,5], 3)) # 239
 # print(solution.wordPattern("abba","dog cat cat fish")) # 290
-print(solution.isAdditiveNumber("101")) # 306
+# print(solution.isAdditiveNumber("101")) # 306
 # print(solution.wiggleMaxLength([1,2,3,4,5,6,7,8,9])) # 376
 # print(solution.findTheDifference(s = "a", t = "aa")) # 389
 # print(solution.decodeString("abc3[cd]xyz")) # 394
