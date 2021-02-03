@@ -328,7 +328,7 @@ class Solution:
                 nums[index+1] = nums[i]
                 index += 1
         return index+1
-    # (27)
+    # (27) T: 55.71% S: 37.35%
     def removeElement(self, nums: List[int], val: int) -> int:
         count = 0
         for i in range(len(nums)):
@@ -1007,6 +1007,22 @@ class Solution:
                 result += 1
         return result
 
+    # (463) T: 81.06% S: 21.17%
+    def islandPerimeter(self, grid: List[List[int]]) -> int:
+        result = 0
+        for i in range(len(grid)):
+            for j in range(len(grid[i])):
+                if grid[i][j] == 1:
+                    if i == 0 or grid[i-1][j] == 0:
+                        result += 1
+                    if j == 0 or grid[i][j-1] == 0:
+                        result += 1
+                    if i == len(grid)-1 or grid[i+1][j] == 0:
+                        result += 1
+                    if j == len(grid[i])-1 or grid[i][j+1] == 0:
+                        result += 1
+        return result
+
     # (473) T: 96.66% S: 24.07%
     def makesquareHelper(self, nums: List[int], vis: List[bool], pos: int, sum: int) -> bool:
         # print(sum)
@@ -1035,6 +1051,40 @@ class Solution:
                 return False
             # print('------------------------------------')
         return True
+
+    # (480) T: 29.09% S: 15.13%
+    def medianSlidingWindow(self, nums: List[int], k: int) -> List[float]:
+        def updateAndSort(nums: List[int], old: int, new: int):
+            index = -1
+            for i in range(len(nums)):
+                if nums[i] == old:
+                    nums[i] = new
+                    index = i
+                    break
+            if index != 0 and nums[index] < nums[index-1]:
+                for i in range(index-1, -1, -1):
+                    if nums[i+1] < nums[i]:
+                        nums[i+1], nums[i] = nums[i], nums[i+1]
+                    else:
+                        break
+            elif index != len(nums)-1 and nums[index] > nums[index+1]:
+                for i in range(index+1, len(nums)):
+                    if nums[i-1] > nums[i]:
+                        nums[i-1], nums[i] = nums[i], nums[i-1]
+                    else:
+                        break
+        temp = [-1] + nums[0:k-1]
+        temp.sort()
+        old = -1
+        result = []
+        for i in range(k-1, len(nums)):
+            updateAndSort(temp, old, nums[i])
+            if k % 2 == 0:
+                result.append((temp[math.floor(k/2)-1]+temp[math.floor(k/2)])/2)
+            else:
+                result.append(temp[math.floor(k/2)])
+            old= nums[i-k+1]
+        return result
 
     # (507) T: 75.00% S: 6.27%
     def checkPerfectNumber(self, num: int) -> bool:
@@ -1093,6 +1143,25 @@ class Solution:
                 queue = temp
             result += 1
         return result
+
+    # (581) T: 97.34% S: 23.86%
+    def findUnsortedSubarray(self, nums: List[int]) -> int:
+        nums_sort = nums[:]
+        nums_sort.sort()
+        count = 0
+        for i in range(len(nums)):
+            if nums[i] == nums_sort[i]:
+                count += 1
+            else:
+                break
+        for i in range(len(nums)-1, -1, -1):
+            if nums[i] == nums_sort[i]:
+                count += 1
+            else:
+                break
+        if count > len(nums):
+            return 0
+        return len(nums) - count
 
     # (599) T: 60.03% S: 8.68%
     def findRestaurant(self, list1: List[str], list2: List[str]) -> List[str]:
@@ -1660,6 +1729,15 @@ class Solution:
             queue = temp
         return True
 
+    # (976) T: 96.06% S: 5.08%
+    def largestPerimeter(self, A: List[int]) -> int:
+        A.sort()
+        for i in range(len(A)-4, -1, -1):
+            triangle = A[i:i+4]
+            if triangle[0] + triangle[1] > triangle[2]:
+                return triangle[0] + triangle[1] + triangle[2]
+        return 0
+
     # (989) T: 96.90% S: 5.21%
     def addToArrayForm(self, A: List[int], K: int) -> List[int]:
         k_list = [int(i) for i in str(K)]
@@ -2218,7 +2296,7 @@ class Twitter:
 solution = Solution()
 # print(solution.lengthOfLongestSubstring("abcabcbb")) # 3
 # print(solution.threeSum([-2,0,0,2,2])) # 15
-print(solution.removeElement([0,1,2,2,3,0,4,2],2)) # 27
+# print(solution.removeElement([0,1,2,2,3,0,4,2],2)) # 27
 # print(solution.firstMissingPositive([3,4,-1,1])) # 41
 # print(solution.groupAnagrams(["eat", "tea", "tan", "ate", "nat", "bat"])) # 49
 # print(solution.uniquePaths(5, 1)) # 62
@@ -2237,6 +2315,7 @@ print(solution.removeElement([0,1,2,2,3,0,4,2],2)) # 27
 # print(solution.calcEquation([["x1","x2"],["x2","x3"],["x1","x4"],["x2","x5"]],[3.0,0.5,3.4,5.6],[["x4","x3"]])) # 399
 # print(solution.eraseOverlapIntervals([ [1,2], [1,2], [1,2] ])) # 435
 # print(solution.makesquare([10,6,5,5,5,3,3,3,2,2,2,2])) # 473
+print(solution.medianSlidingWindow([1,3,-1,-3,5,3,6,7], 3)) # 480
 # print(solution.findCircleNum([[1,0,0,1],[0,1,1,0],[0,1,1,1],[1,0,1,1]])) # 547
 # print(solution.canPlaceFlowers(flowerbed = [1,0,0,0,1], n = 2)) # 605
 # print(solution.leastInterval(["A","A","A","B","B","B"], 2)) # 621
