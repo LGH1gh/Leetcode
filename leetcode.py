@@ -339,6 +339,16 @@ class Solution:
                 nums[i-count] = nums[i]
         return len(nums)-count
 
+    # (35) T: 34.29% S: 15.97%
+    def searchInsert(self, nums: List[int], target: int) -> int:
+        index = 0
+        while index < len(nums):
+            if nums[index] >= target:
+                return index
+            else:
+                index += 1
+        return index
+
     # (39) T: 78.52% S: 5.67%
     def combinationSum(self, candidates: List[int], target: int) -> List[List[int]]:
         if target == 0:
@@ -1216,6 +1226,16 @@ class Solution:
         nums.sort()
         return max(nums[0]*nums[1]*nums[2], nums[0]*nums[1]*nums[-1], nums[-1]*nums[-2]*nums[-3])
 
+    # (643) T: 96.41% S: 27.10%
+    def findMaxAverage(self, nums: List[int], k: int) -> float:
+        max_sum, temp_sum = sum(nums[0:k]), sum(nums[0:k])
+        for i in range(1, len(nums)-k+1):
+            temp_sum = temp_sum - nums[i-1] + nums[i+k-1]
+            if temp_sum > max_sum:
+                max_sum = temp_sum
+        return max_sum / k
+
+
     # (649) T: 75.00% S: 41.10%
     def predictPartyVictory(self, senate: str) -> str:
         mark = [0 for i in range(len(senate))]
@@ -1361,6 +1381,9 @@ class Solution:
                 if i < len(s1) and j < len(s2) and s1[i] == s2[j]:
                         note[i+1][j+1] = note[i][j]
         return note[len(s1)][len(s2)]
+
+
+
 
     # (721) T: 35.73% S: 20.35%
     def accountsMerge(self, accounts: List[List[str]]) -> List[List[str]]:
@@ -1672,6 +1695,21 @@ class Solution:
             result += int(str(''.join(A[i])), 2)
         return result
 
+    # (876) T: 52.33% S: 33.24%
+    def middleNode(self, head: ListNode) -> ListNode:
+        if head.next == None:
+            return head
+        slow, fast = head, head
+        while True:
+            slow = slow.next
+            fast = fast.next
+            if fast.next == None:
+                break
+            fast = fast.next
+            if fast.next == None:
+                break
+        return slow
+
     # (888) T: 48.59% S: 39.00%
     def fairCandySwap(self, A: List[int], B: List[int]) -> List[int]:
         sum_A, sum_B = sum(A), sum(B)
@@ -1686,6 +1724,31 @@ class Solution:
             else:
                 i += 1
         return None
+
+    # (917) T: 98.58% S: 32.80%
+    def reverseOnlyLetters(self, S: str) -> str:
+        ch = ''
+        position = [0]
+        for i in range(len(S)):
+            if S[i].isalpha():
+                ch += S[i]
+                if str(type(position[-1])) == "<class 'int'>":
+                    position[-1] += 1
+                else:
+                    position.append(1)
+            else:
+                ch.isnumeric
+                position.append(S[i])
+        ch_reverse = ''.join(reversed(ch))
+        index = 0
+        result = ''
+        for i in range(len(position)):
+            if str(type(position[i])) == "<class 'int'>":
+                result += ch_reverse[index:index+position[i]]
+                index += position[i]
+            else:
+                result += position[i]
+        return result
 
     # (959) T: 47.52% S: 35.79%
     def regionsBySlashes(self, grid: List[str]) -> int:
