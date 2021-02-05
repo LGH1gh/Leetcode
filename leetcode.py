@@ -154,7 +154,30 @@ class Solution:
         if (sign == 1 and x > 2**31 - 1) or (sign == -1 and x > 2**31):
             return 0
         return sign * x
-
+    # (8) T: 64.88% S: 7.53%
+    def myAtoi(self, s: str) -> int:
+        s = s.strip()
+        if s == "":
+            return 0 
+        mark = 1
+        if s[0] == '-' or s[0] == '+':
+            if s[0] == '-':
+                mark = -1
+            s = s[1:]
+        index = 0
+        while index < len(s) and s[index].isnumeric():
+            index += 1
+        if index == 0:
+            return 0
+        num = int(s[0:index])
+        if mark == 1 and num > 2**31-1:
+            return 2**31-1
+        elif mark == 1:
+            return num
+        elif mark == -1 and -num < -2**31:
+            return -2**31
+        elif mark == -1:
+            return -num
     # (9) T: 29.73 S: 12.81%
     def isPalindrome(self, x: int) -> bool:
         if x < 0:
@@ -165,6 +188,16 @@ class Solution:
             x = int(x / 10)
         return nums == nums[::-1]
 
+    # (12) T: 47.03% S: 22.00%
+    def intToRoman(self, num: int) -> str:
+        nums = [1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1]
+        roman = ['M', 'CM', 'D', 'CD', 'C', 'XC', 'L', 'XL', 'X', 'IX', 'V', 'IV', 'I']
+        result = ""
+        for i in range(13):
+            while num >= nums[i]:
+                num -= nums[i]
+                result += roman[i]
+        return result
     # (13) T: 97.55% S: 6.06%
     def romanToInt(self, s: str) -> int:
         nums = []
@@ -215,7 +248,23 @@ class Solution:
                 else:
                     j += 1
         return result
-
+    # (16) T: 40.52% S: 31.83%
+    def threeSumClosest(self, nums: List[int], target: int) -> int:
+        nums.sort()
+        closest_num = sum(nums[0:3])
+        for a in range(len(nums)-2):
+            b, c = a+1, len(nums)-1
+            while b < c:
+                temp_num = nums[a] + nums[b] + nums[c]
+                if abs(temp_num - target) < abs(closest_num - target):
+                    closest_num = temp_num
+                if temp_num - target == 0:
+                    return temp_num
+                elif temp_num - target > 0:
+                    c -= 1
+                else:
+                    b += 1
+        return closest_num                
     # (17) T: 77.90% S: 26.16%
     def letterCombinations(self, digits: str) -> List[str]:
         if len(digits) == 0:
@@ -1875,7 +1924,6 @@ class Solution:
                 result += int(value * (value-1) / 2)
         return result
 
-
     # (1202) T: 54.78% S: 35.85%
     def smallestStringWithSwaps(self, s: str, pairs: List[List[int]]) -> str:
         if len(pairs) == 0:
@@ -1922,6 +1970,31 @@ class Solution:
             for j in range(len(graph_str[i])):
                 result[graph[i][j]] = graph_str[i][j]
         return ''.join(result)
+
+    # (1208) T: 71.90% S: 25.34%
+    def equalSubstring(self, s: str, t: str, maxCost: int) -> int:
+        cost_list = []
+        for ch1, ch2 in zip(s, t):
+            cost_list.append(abs(ord(ch1)-ord(ch2)))
+        # print(f'{s}, {t}, {maxCost}, {cost_list}')
+        left, count, length = 0, 1, len(s)
+        max_length, temp_cost = 0, cost_list[0]
+        while left + count <= length:
+            # print(f'{left}, {count}, {temp_cost}')
+            if temp_cost > maxCost and left + count < length:
+                temp_cost = temp_cost - cost_list[left] + cost_list[left+count]
+                left += 1
+            elif temp_cost > maxCost and left + count == length:
+                return max_length
+            elif temp_cost <= maxCost and left + count < length:
+                max_length = count
+                temp_cost = temp_cost + cost_list[left+count]
+                count += 1
+            elif temp_cost <= maxCost and left + count == length:
+                max_length = count
+                return max_length
+
+        return max_length
 
     # (1232) T: 13.42% S: 5.64%
     def checkStraightLine(self, coordinates: List[List[int]]) -> bool:
@@ -2378,7 +2451,7 @@ solution = Solution()
 # print(solution.calcEquation([["x1","x2"],["x2","x3"],["x1","x4"],["x2","x5"]],[3.0,0.5,3.4,5.6],[["x4","x3"]])) # 399
 # print(solution.eraseOverlapIntervals([ [1,2], [1,2], [1,2] ])) # 435
 # print(solution.makesquare([10,6,5,5,5,3,3,3,2,2,2,2])) # 473
-print(solution.medianSlidingWindow([1,3,-1,-3,5,3,6,7], 3)) # 480
+# print(solution.medianSlidingWindow([1,3,-1,-3,5,3,6,7], 3)) # 480
 # print(solution.findCircleNum([[1,0,0,1],[0,1,1,0],[0,1,1,1],[1,0,1,1]])) # 547
 # print(solution.canPlaceFlowers(flowerbed = [1,0,0,0,1], n = 2)) # 605
 # print(solution.leastInterval(["A","A","A","B","B","B"], 2)) # 621
@@ -2399,6 +2472,7 @@ print(solution.medianSlidingWindow([1,3,-1,-3,5,3,6,7], 3)) # 480
 # print(solution.regionsBySlashes([" /\\"," \\/","\\  "])) # 959
 # print(solution.addToArrayForm([2,7,4], 181)) # 989
 # print(solution.smallestStringWithSwaps(s = "dcab", pairs = [[0,3],[1,2],[0,2]])) # 1202
+# print(solution.equalSubstring("krpgjbjjznpzdfy","nxargkbydxmsgby",14)) # 1208
 # print(solution.removeCoveredIntervals([[1,4],[3,6],[2,8], [1,3]])) # 1288
 # print(solution.diagonalSort(mat = [[3,3,1,1],[2,2,1,2],[1,1,1,2]])) # 1329
 # print(solution.maxScore(cardPoints = [1,79,80,1,1,1,200,1], k = 3)) # 1423
