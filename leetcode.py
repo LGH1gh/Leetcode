@@ -18,6 +18,12 @@ class ListNode:
         self.val = x
         self.next = None
 
+class DoubleLinkedListNode:
+    def __init__(self, key=0, value=0) -> None:
+        self.key = key
+        self.value = value
+        self.prev, self.next = None, None
+
 class UnionFindSet:
     def __init__(self, count):
         self.data = list(range(count))
@@ -368,6 +374,57 @@ class Solution:
         result = []
         generateParenthesis(n, 0, 0, result, "")
         return result
+    # (23) T: 18.75% S: 56.24%
+    def mergeKLists(self, lists: List[ListNode]) -> ListNode:
+        class MinHeap:
+            data = []
+            def __init__(self, node_list: List[List[int]]) -> None:
+                self.data = node_list.copy()
+                for i in range(math.floor(len(node_list)/2)-1, -1, -1):
+                    self.__down(i)
+            
+            def insert(self, node: List[int]):
+                position = len(self.data)
+                self.data.append(node)
+                while position != 0 and self.data[position][0].val < self.data[math.floor((position-1)/2)][0].val:
+                    self.data[position], self.data[math.floor((position-1)/2)] = self.data[math.floor((position-1)/2)], self.data[position]
+                    position = math.floor((position-1)/2)
+            
+            def delete(self):
+                self.data[0] = self.data[-1]
+                self.data.pop()
+                self.__down(0)
+
+            def __down(self, position: int):
+                if position > math.floor(len(self.data)/2)-1:
+                    return
+                if (position+1)*2 == len(self.data):
+                    if self.data[(position+1)*2-1][0].val < self.data[position][0].val:
+                        self.data[position], self.data[position*2+1] = self.data[position*2+1], self.data[position]
+                    return
+                if self.data[(position+1)*2][0].val <= self.data[position*2+1][0].val and self.data[(position+1)*2][0].val <= self.data[position][0].val:
+                    self.data[position], self.data[(position+1)*2] = self.data[(position+1)*2], self.data[position]
+                    return self.__down((position+1)*2)
+                elif self.data[position*2+1][0].val <= self.data[(position+1)*2][0].val and self.data[position*2+1][0].val <= self.data[position][0].val:
+                    self.data[position], self.data[position*2+1] = self.data[position*2+1], self.data[position]
+                    return self.__down(position*2+1)
+        node_list = []
+        for i in range(len(lists)):
+            if lists[i] != None:
+                node_list.append([lists[i], i])
+                lists[i] = lists[i].next
+        min_heap = MinHeap(node_list)
+        cur = head = ListNode(0)
+        while len(min_heap.data) != 0:
+            cur.next = min_heap.data[0][0]
+            cur = cur.next
+            temp = min_heap.data[0][1]
+            min_heap.delete()
+            if lists[temp] != None:
+                min_heap.insert([lists[temp], temp])
+                lists[temp] = lists[temp].next
+        return head.next
+
 
     # (26) T: 89.60% S: 32.22%
     def removeDuplicates(self, nums: List[int]) -> int:
@@ -561,6 +618,32 @@ class Solution:
                 return True
         return False
 
+    # (85) T: 19.35% S: 20.91%
+    def maximalRectangle(self, matrix: List[List[str]]) -> int:
+        if matrix == []:
+            return 0
+        nums_matrix = [[0 for j in range(len(matrix[0]))] for i in range(len(matrix))]
+        for j in range(len(matrix[0])):
+            if matrix[0][j] == '1':
+                nums_matrix[0][j] = 1
+        for i in range(1, len(matrix)):
+            for j in range(len(matrix[i])):
+                if matrix[i][j] == '1':
+                    nums_matrix[i][j] = nums_matrix[i-1][j] + 1
+                else:
+                    nums_matrix[i][j] = 0
+        result = 0
+        # print(nums_matrix)
+        for i in range(len(nums_matrix)-1, -1, -1):
+            for j in range(len(nums_matrix[i])):
+                for k in range(j+1, len(matrix[i])+1):
+                    # print(f'{i}, {j}, {k}, {(k - j) * min(nums_matrix[i][j:k])}')
+                    if min(nums_matrix[i][j:k]) == 0:
+                        break
+                    if result < (k - j) * min(nums_matrix[i][j:k]):
+                        result = (k - j) * min(nums_matrix[i][j:k])
+                    
+        return result
     # (86) T: 12.87% S: 19.05%
     def partition(self, head: ListNode, x: int) -> ListNode:
         left_head = left_tail = ListNode(-1)
@@ -720,6 +803,26 @@ class Solution:
             res = max(max_num, res)
         return res
 
+    # (160) T: 39.05% S: 26.21%
+    def getIntersectionNode(self, headA: ListNode, headB: ListNode) -> ListNode:
+        count_a, count_b = 0, 0
+        cur_a, cur_b = headA, headB
+        while cur_a != None:
+            cur_a = cur_a.next
+            count_a += 1
+        while cur_b != None:
+            cur_b = cur_b.next
+            count_b += 1
+        if count_a > count_b:
+            for i in range(count_a-count_b):
+                headA = headA.next
+        else:
+            for i in range(count_b-count_a):
+                headB = headB.next
+        while headB != headA:
+            headA, headB = headA.next, headB.next
+        return headA
+
     # (188) T: 13.66% S: 8.60%
     def maxProfit4(self, k: int, prices: List[int]) -> int:
         # length -> 交易日, k+1 -> 交易次数, 2 -> 是否买入(0:未买入, 1买入)
@@ -756,6 +859,19 @@ class Solution:
             queue = temp_queue
         return result
         
+    # (206) T: 8.05% S: 48.49%
+    def reverseList(self, head: ListNode) -> ListNode:
+        if head == None:
+            return None
+        prev, cur = head, head.next
+        while cur != None:
+            temp = cur.next
+            cur.next = prev
+            prev = cur
+            cur = temp
+        head.next = None
+        return prev 
+
     # (213) T: 58.34% S: 14.25%
     def rob(self, nums: List[int]) -> int:
         if len(nums) == 1:
@@ -858,6 +974,18 @@ class Solution:
                     break
         return result
 
+    # (287) T: 75.26% S: 34.23%
+    def findDuplicate(self, nums: List[int]) -> int:
+        slow, fast = 0, nums[0]
+        while slow != fast:
+            slow = nums[slow]
+            fast = nums[nums[fast]]
+        cur, slow = 0, nums[slow]
+        while slow != cur:
+            slow = nums[slow]
+            cur = nums[cur]
+        return cur
+        
     # (290) T: 14.16% S: 5.37%
     def wordPattern(self, pattern: str, s: str) -> bool:
         strList = s.split(' ')
@@ -1431,9 +1559,6 @@ class Solution:
                         note[i+1][j+1] = note[i][j]
         return note[len(s1)][len(s2)]
 
-
-
-
     # (721) T: 35.73% S: 20.35%
     def accountsMerge(self, accounts: List[List[str]]) -> List[List[str]]:
         emails = dict()
@@ -1824,6 +1949,21 @@ class Solution:
                     ufs.union(i*4*len(grid)+j*4+2, (i+1)*4*len(grid)+j*4)
         return len({ufs.find(x) for x in range(len(grid)*len(grid)*4)})
 
+    # (962) T: 99.47% S: 42.24%
+    def maxWidthRamp(self, A: List[int]) -> int:
+        if len(A) == 0:
+            return 0
+        increase_stack = [0]
+        for i in range(1, len(A)):
+            if A[i] < A[increase_stack[-1]]:
+                increase_stack.append(i)
+        result = 0
+        for j in range(len(A)-1, result-1, -1):
+            while increase_stack and A[increase_stack[-1]] <= A[j]:
+                k = j - increase_stack.pop()
+                result = max(result, k) 
+        return result
+
     # (965) T: 13.17% S: 5.07%
     def isUnivalTree(self, root: TreeNode) -> bool:
         queue = [root]
@@ -1889,6 +2029,24 @@ class Solution:
             result.append("1")
         result.reverse()
         return result
+
+    # (995) T: 40.00% S: 41.90%
+    def minKBitFlips(self, A: List[int], K: int) -> int:
+        count = 0
+        change = [0 for _ in range(len(A)+1)]
+        flip = 0
+        for i in range(len(A)-K+1):
+            flip ^= change[i]
+            if A[i] == flip:
+                flip ^= 1
+                count += 1
+                change[i+K] = 1
+
+        for i in range(len(A)-K+1, len(A)):
+            flip ^= change[i]
+            if A[i] == flip:
+                return -1
+        return count
 
     # (1018) T: 66.45% S: 16.56%
     def prefixesDivBy5(self, A: List[int]) -> List[bool]:
@@ -2368,7 +2526,78 @@ class Solution:
                 else:
                     break
         return result % (10**9+7)
-                
+
+# (146) T: 21.38% S: 8.80%
+class LRUCache:
+
+    def __init__(self, capacity: int):
+        self.cache = dict()
+        self.head = DoubleLinkedListNode()
+        self.tail = DoubleLinkedListNode()
+        self.head.next = self.tail
+        self.tail.prev = self.head
+        self.size = 0
+        self.capacity = capacity
+
+    def get(self, key: int) -> int:
+        if key not in self.cache:
+            return -1
+        node = self.cache[key]
+        self.__moveToHead(node)
+        return node.value
+
+    def put(self, key: int, value: int) -> None:
+        if key not in self.cache:
+            node = DoubleLinkedListNode(key, value)
+            self.cache[key] = node
+            self.__addHead(node)
+            self.size += 1
+            if self.size > self.capacity:
+                removed_node = self.__removeTail()
+                self.cache.pop(removed_node.key)
+                self.size -= 1
+        else:
+            node = self.cache[key]
+            node.value = value
+            self.__moveToHead(node)
+    
+    def __addHead(self, node: DoubleLinkedListNode) -> None:
+        node.prev, node.next = self.head, self.head.next
+        node.prev.next = node
+        node.next.prev = node
+        
+    def __removeTail(self) -> DoubleLinkedListNode:
+        node = self.tail.prev
+        self.tail.prev = node.prev
+        node.prev.next = node.next
+        return node
+    
+    def __moveToHead(self, node: DoubleLinkedListNode) -> None:
+        node.prev.next = node.next
+        node.next.prev = node.prev
+        self.__addHead(node)
+
+# (155) T: 84.68% S: 37.44%
+class MinStack:
+    def __init__(self):
+        self.stack = []
+        self.min_stack = []
+    
+    def push(self, x: int) -> None:
+        self.stack.append(x)
+        if len(self.min_stack) == 0 or x <= self.min_stack[-1]:
+            self.min_stack.append(x)
+    
+    def pop(self) -> None:
+        x = self.stack.pop()
+        if x == self.min_stack[-1]:
+            self.min_stack.pop()
+
+    def top(self) -> int:
+        return self.stack[-1]
+
+    def getMin(self) -> int:
+        return self.min_stack[-1]
 
 # (355) T: 80.57% S: 5.38%
 class Twitter:
