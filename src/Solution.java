@@ -61,6 +61,45 @@ class NumMatrix {
 }
 
 public class Solution {
+    // 4 (hard, T: 82.41%, S: 72.23%)
+    public double findMedianSortedArrays(int[] nums1, int[] nums2) {
+        Integer totalLength = nums1.length + nums2.length;
+        Integer midIndex = totalLength / 2 + 1;
+        Integer nums1Iter = -1, nums2Iter = -1;
+        Integer mid1Num = 0, mid2Num = 0;
+
+        for (int i = 0; i < midIndex; ++i) {
+            if (nums1Iter + 1 == nums1.length) {
+                nums2Iter++;
+                mid1Num = mid2Num;
+                mid2Num = nums2[nums2Iter];
+            }
+            else if (nums2Iter + 1 == nums2.length) {
+                nums1Iter++;
+                mid1Num = mid2Num;
+                mid2Num = nums1[nums1Iter];
+            }
+            else {
+                if (nums1[nums1Iter+1] < nums2[nums2Iter+1]) {
+                    nums1Iter++;
+                    mid1Num = mid2Num;
+                    mid2Num = nums1[nums1Iter];
+                }
+                else {
+                    nums2Iter++;
+                    mid1Num = mid2Num;
+                    mid2Num = nums2[nums2Iter];
+                }
+            }
+        }
+
+        if (totalLength % 2 == 0) {
+            return 1.0 * (mid1Num + mid2Num) / 2.0;
+        }
+        else {
+            return 1.0 * mid2Num;
+        }
+    }
 
     // 29 (medium, T: 36.02%, S: 9.49%)
     public int divide(int dividend, int divisor) {
@@ -371,6 +410,46 @@ public class Solution {
         }
     }
 
+    // 354 (hard, T: 19.11%, S: 5.12%)
+    class MaxEnvelopes {
+        MaxEnvelopes(int num, int[] last) {
+            this.num = num;
+            this.last = last;
+        }
+        int num;
+        int[] last;
+    }
+    public int maxEnvelopes(int[][] envelopes) {
+        Arrays.sort(envelopes, (int[] a, int[] b) -> {
+            if (a[0] != b[0]) return a[0] - b[0];
+            else return a[1] - b[1];
+        });
+        // System.out.println(Arrays.deepToString(envelopes));
+
+        MaxEnvelopes[] dp = new MaxEnvelopes[envelopes.length];
+        dp[0] = new MaxEnvelopes(1, envelopes[0]);
+        int result = 1;
+        for (int i = 1; i < envelopes.length; ++i) {
+            int max = -1;
+            for (int j = i-1; j >= 0; --j) {
+                if (envelopes[j][0] < envelopes[i][0] && envelopes[j][1] < envelopes[i][1]) {
+                    if (max == -1) max = j;
+                    else if (dp[j].num > dp[max].num) max = j;
+                }
+            }
+            if (max == -1) {
+                dp[i] = new MaxEnvelopes(1, envelopes[i]);
+            } else {
+                dp[i] = new MaxEnvelopes(dp[max].num+1, envelopes[max]);
+                if (result < dp[max].num+1) {
+                    result = dp[max].num+1;
+                }
+                // System.out.printf("%d %d [%d %d] [%d %d] %d\n", max, i, envelopes[max][0], envelopes[max][1], envelopes[i][0], envelopes[i][1], dp[max].num+1);
+            }
+        }
+        return result;
+    }
+
     // 896 (easy, T: 40.70%, S: 65.07%)
     public boolean isMonotonic(int[] A) {
         boolean gt = true, lt = true;
@@ -391,17 +470,22 @@ public class Solution {
     public static void main(String[] args) {
         Solution solution = new Solution();
 
-        System.out.println(solution.divide(-1010369383 ,-2147483648)); // 29
-        int[] next_permutation = {1, 3, 2};
-        solution.nextPermutation(next_permutation);
-        System.out.println(Arrays.toString(next_permutation)); // 31
-        System.out.println(solution.search(new int[]{3, 5, 1}, 1)); // 33
-        System.out.println(Arrays.toString(solution.searchRange(new int[]{5}, 8))); // 34
-        System.out.println(solution.multiply("987", "789")); // 43
-        System.out.println(solution.myPow(2.0, -2)); // 50
-        System.out.println(solution.maxSubArray(new int[]{-2,1,-3,4,-1,2,1,-5,4})); // 53
-        System.out.println(solution.spiralOrder(new int[][]{{1, 2}, {3, 4}})); // 54
-        System.out.println(solution.climbStairs(5)); // 70
+        // System.out.println(solution.divide(-1010369383 ,-2147483648)); // 29
+        // int[] next_permutation = {1, 3, 2};
+        // solution.nextPermutation(next_permutation);
+        // System.out.println(Arrays.toString(next_permutation)); // 31
+        // System.out.println(solution.search(new int[]{3, 5, 1}, 1)); // 33
+        // System.out.println(Arrays.toString(solution.searchRange(new int[]{5}, 8))); // 34
+        // System.out.println(solution.multiply("987", "789")); // 43
+        // System.out.println(solution.myPow(2.0, -2)); // 50
+        // System.out.println(solution.maxSubArray(new int[]{-2,1,-3,4,-1,2,1,-5,4})); // 53
+        // System.out.println(solution.spiralOrder(new int[][]{{1, 2}, {3, 4}})); // 54
+        // System.out.println(solution.climbStairs(5)); // 70
+        System.out.println(solution.maxEnvelopes(new int[][]{{46,89},{50,53},{52,68},{72,45},{77,81}}
+        )); // 354
     }
 }
-
+// {{2,100},{3,200},{4,300},{5,500},{5,400},{5,250},{6,370},{6,360},{7,380}}
+// {{1,3},{3,5},{6,7},{6,8},{8,4},{9,5}}
+// {{1,2},{2,3},{3,4},{3,5},{4,5},{5,5},{5,6},{6,7},{7,8}}
+// {{46,89},{50,53},{52,68},{72,45},{77,81}}
