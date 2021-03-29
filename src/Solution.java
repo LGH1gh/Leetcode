@@ -1,6 +1,51 @@
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Stack;
+
+class MyQueue {
+
+    Stack<Integer> in, out;
+    /** Initialize your data structure here. */
+    public MyQueue() {
+        in = new Stack<>();
+        out = new Stack<>();
+    }
+    
+    /** Push element x to the back of queue. */
+    public void push(int x) {
+        in.push(x);
+    }
+    
+    /** Removes the element from in front of queue and returns that element. */
+    public int pop() {
+        if (out.empty()) {
+            int size = in.size();
+            for (int i = 0; i < size; ++i) {
+                out.push(in.pop());
+            }
+        }
+        return out.pop();
+
+    }
+    
+    /** Get the front element. */
+    public int peek() {
+        if (out.empty()) {
+            int size = in.size();
+            for (int i = 0; i < size; ++i) {
+                out.push(in.pop());
+            }
+        }
+
+        return out.peek();
+    }
+    
+    /** Returns whether the queue is empty. */
+    public boolean empty() {
+        return in.empty() && out.empty();
+    }
+}
 
 // 303 (easy, T: 77.14%, S: 41.56%)
 class NumArray {
@@ -392,6 +437,16 @@ public class Solution {
         return b;
     }
 
+    // 190 (easy, T: 100.00%, S: 63.98%)
+    public int reverseBits(int n) {
+        int result = 0;
+        for (int i = 0; i < 32; ++i) {
+            result = (result << 1) + (n & 1);
+            n = n >>> 1;
+        }
+        return result;
+    }
+
     // 338 (medium, T: 99.95%, S: 80.05%)
     public int[] countBits(int num) {
         if (num == 0) return new int[]{0};
@@ -445,6 +500,49 @@ public class Solution {
                     result = dp[max].num+1;
                 }
                 // System.out.printf("%d %d [%d %d] [%d %d] %d\n", max, i, envelopes[max][0], envelopes[max][1], envelopes[i][0], envelopes[i][1], dp[max].num+1);
+            }
+        }
+        return result;
+    }
+
+    // 503 (medium, T: 72.39%, S: 7.57%)
+    public int[] nextGreaterElements(int[] nums) {
+        if (nums.length == 0) return new int[0];
+        Stack<Integer> stack = new Stack<>();
+        Stack<Integer> mark = new Stack<>();
+        int[] result = new int[nums.length];
+        stack.push(nums[0]);
+        mark.push(0);
+        int max = nums[0];
+        for (int i = 1; i < nums.length; ++i) {
+            if (nums[i] > max) {
+                max = nums[i];
+            }
+            if (stack.peek() >= nums[i]) {
+                stack.push(nums[i]);
+                mark.push(i);
+            }
+            else {
+                while (!stack.empty() && stack.peek() < nums[i]) {
+                    stack.pop();
+                    result[mark.pop()] = nums[i];
+                }
+                stack.push(nums[i]);
+                mark.push(i);
+            }
+        }
+        for (int i = 0; i < nums.length; ++i) {
+            if (stack.empty()) {
+                break;
+            }
+            if (stack.peek() == max) {
+                stack.pop();
+                result[mark.pop()] = -1;
+            } else if (stack.peek() < nums[i]) {
+                while (!stack.empty() && stack.peek() < nums[i]) {
+                    stack.pop();
+                    result[mark.pop()] = nums[i];
+                }
             }
         }
         return result;
