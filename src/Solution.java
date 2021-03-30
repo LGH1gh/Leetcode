@@ -437,6 +437,31 @@ public class Solution {
         return b;
     }
 
+    // 74 (medium, T: 100.00%, S: 68.67%)
+    public boolean searchMatrix(int[][] matrix, int target) {
+        int row = 0;
+        for (; row < matrix.length; ++row) {
+            if (matrix[row][0] > target) {
+                break;
+            }
+        }
+        if (row == matrix.length) row = row - 1;
+        else if (matrix[row][0] > target) {
+            row = row - 1;
+            if (row < 0) return false;
+        }
+        int col = 0;
+        for (; col < matrix[0].length; ++col) {
+            if (matrix[row][col] == target) {
+                return true;
+            }
+            if (matrix[row][col] > target) {
+                return false;
+            }
+        }
+        return false;
+    }
+
     // 190 (easy, T: 100.00%, S: 63.98%)
     public int reverseBits(int n) {
         int result = 0;
