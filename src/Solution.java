@@ -462,6 +462,39 @@ public class Solution {
         return false;
     }
 
+    // 90 (medium, T: 100.00%, S: 36.70%)
+    public void subsetsWithDupHelper(int[] nums, int position, List<List<Integer>> result, List<Integer> temp) {
+        if (position >= nums.length) {
+            result.add(temp);
+            return;
+        }
+        for (int i = position; i <= nums.length; ++i) {
+            if (i == nums.length) {
+                List<Integer> next = new ArrayList<>(temp);
+                subsetsWithDupHelper(nums, i+1, result, next);
+            }
+            else if (i == position || nums[i] != nums[i-1]) {
+                List<Integer> next = new ArrayList<>(temp);
+                next.add(nums[i]);
+                subsetsWithDupHelper(nums, i+1, result, next);
+            }
+            
+        }
+    }
+    public List<List<Integer>> subsetsWithDup(int[] nums) {
+        Arrays.sort(nums);
+        List<List<Integer>> result = new ArrayList<>();
+        result.add(new ArrayList<>());
+        for (int i = 0; i < nums.length; ++i) {
+            if (i == 0 || nums[i] != nums[i-1]) {
+                List<Integer> temp = new ArrayList<>();
+                temp.add(nums[i]);
+                subsetsWithDupHelper(nums, i+1, result, temp);
+            }
+        }
+        return result;
+    }
+
     // 190 (easy, T: 100.00%, S: 63.98%)
     public int reverseBits(int n) {
         int result = 0;
