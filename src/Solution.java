@@ -2,6 +2,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Stack;
+import java.util.stream.Collectors;
 
 class MyQueue {
 
@@ -462,6 +463,11 @@ public class Solution {
         return false;
     }
 
+    // 81 (medium, T: 88.78%, S: 30.70%)
+    public boolean searchII(int[] nums, int target) {
+        return Arrays.stream(nums).boxed().collect(Collectors.toList()).contains(target);
+    }
+
     // 90 (medium, T: 100.00%, S: 36.70%)
     public void subsetsWithDupHelper(int[] nums, int position, List<List<Integer>> result, List<Integer> temp) {
         if (position >= nums.length) {
@@ -503,6 +509,28 @@ public class Solution {
             n = n >>> 1;
         }
         return result;
+    }
+
+    // 213 (medium, T: 100.00%, S: 9.75%)
+    public int rob(int[] nums) {
+        if (nums.length == 1) {
+            return nums[0];
+        }
+        int[][] dp1 = new int[nums.length-1][2];
+        dp1[0][0] = nums[0];
+        dp1[0][1] = 0;
+        for (int i = 1; i < nums.length-1; ++i) {
+            dp1[i][0] = dp1[i-1][1] + nums[i];
+            dp1[i][1] = Math.max(dp1[i-1][1], dp1[i-1][0]);
+        }
+        int[][] dp2 = new int[nums.length-1][2];
+        dp2[0][0] = nums[1];
+        dp2[0][1] = 0;
+        for (int i = 2; i < nums.length; ++i) {
+            dp2[i-1][0] = dp2[i-2][1] + nums[i];
+            dp2[i-1][1] = Math.max(dp2[i-2][1], dp2[i-2][0]);
+        }
+        return Math.max(Math.max(dp1[nums.length-2][0], dp1[nums.length-2][1]), Math.max(dp2[nums.length-2][0], dp2[nums.length-2][1]));
     }
 
     // 338 (medium, T: 99.95%, S: 80.05%)
